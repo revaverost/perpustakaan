@@ -7,11 +7,25 @@
         <p class="text-muted small mb-0">Kelola dan pantau peminjaman buku mahasiswa</p>
     </div>
     <div class="col-md-6 text-md-end mt-3 mt-md-0">
+        <div class="btn-group me-2">
+            <a href="{{ route('peminjaman.export.pdf', request()->query()) }}" class="btn btn-outline-danger shadow-sm"><i class="bi bi-file-earmark-pdf me-1"></i> Export PDF</a>
+            <a href="{{ route('peminjaman.export.csv', request()->query()) }}" class="btn btn-outline-success shadow-sm"><i class="bi bi-file-earmark-spreadsheet me-1"></i> Export CSV</a>
+        </div>
+        @if(Auth::user()->role !== 'Admin')
         <a href="{{ route('peminjaman.create') }}" class="btn btn-primary shadow-sm">
             <i class="bi bi-plus-lg me-1"></i> Transaksi Peminjaman Baru
         </a>
+        @endif
     </div>
 </div>
+
+<form method="GET" action="{{ route('peminjaman.index') }}" class="card border-0 shadow-sm mb-3">
+    <div class="card-body row g-2 align-items-end">
+        <div class="col-md-4"><label class="form-label small fw-bold">Tanggal mulai</label><input type="date" name="tanggal_mulai" value="{{ request('tanggal_mulai') }}" class="form-control"></div>
+        <div class="col-md-4"><label class="form-label small fw-bold">Tanggal akhir</label><input type="date" name="tanggal_akhir" value="{{ request('tanggal_akhir') }}" class="form-control"></div>
+        <div class="col-md-4"><button class="btn btn-primary me-1"><i class="bi bi-filter me-1"></i> Filter</button><a href="{{ route('peminjaman.index') }}" class="btn btn-outline-secondary">Reset</a></div>
+    </div>
+</form>
 
 <div class="card border-0 shadow-sm">
     <div class="card-body p-0">

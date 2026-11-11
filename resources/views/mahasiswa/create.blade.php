@@ -11,13 +11,13 @@
                         @csrf
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
-                                <label class="form-label fw-bold">NIM</label>
-                                <input type="text" name="nim" class="form-control @error('nim') is-invalid @enderror" value="{{ old('nim') }}" placeholder="Contoh: 20230801001" required>
+                                <label for="nim" class="form-label fw-bold">NIM <span class="text-danger">*</span></label>
+                                <input id="nim" type="text" name="nim" class="form-control @error('nim') is-invalid @enderror" value="{{ old('nim') }}" placeholder="Contoh: 230101001" maxlength="9" required>
                                 @error('nim')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">Nama Lengkap</label>
-                                <input type="text" name="nama" class="form-control @error('nama') is-invalid @enderror" value="{{ old('nama') }}" required>
+                                <input type="text" name="nama" class="form-control @error('nama') is-invalid @enderror" value="{{ old('nama') }}" placeholder="Nama lengkap anggota" required>
                                 @error('nama')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             </div>
                         </div>
@@ -30,7 +30,7 @@
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label fw-bold">Angkatan</label>
-                                <input type="number" name="angkatan" class="form-control @error('angkatan') is-invalid @enderror" value="{{ old('angkatan', date('Y')) }}" required>
+                                <input type="number" name="angkatan" class="form-control @error('angkatan') is-invalid @enderror" value="{{ old('angkatan', date('Y')) }}" min="2000" max="{{ date('Y') + 1 }}" placeholder="{{ date('Y') }}" required>
                                 @error('angkatan')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             </div>
                         </div>
@@ -38,12 +38,12 @@
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">Email</label>
-                                <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" required>
+                                <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" placeholder="nama@kampus.ac.id" required>
                                 @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">No. HP / WhatsApp</label>
-                                <input type="text" name="no_hp" class="form-control @error('no_hp') is-invalid @enderror" value="{{ old('no_hp') }}">
+                                <input type="tel" name="no_hp" class="form-control @error('no_hp') is-invalid @enderror" value="{{ old('no_hp') }}" placeholder="08xxxxxxxxxx">
                                 @error('no_hp')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             </div>
                         </div>
@@ -57,7 +57,7 @@
                             @error('status_aktif')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
 
-                        <div class="d-flex justify-content-between">
+                        <div class="d-flex justify-content-between form-actions">
                             <a href="{{ route('mahasiswa.index') }}" class="btn btn-secondary">Batal</a>
                             <button type="submit" class="btn btn-primary px-4">Simpan Mahasiswa</button>
                         </div>

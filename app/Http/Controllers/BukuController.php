@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Buku;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 
 class BukuController extends Controller
@@ -64,7 +65,18 @@ class BukuController extends Controller
 
     public function destroy(Buku $buku)
     {
-        $buku->delete();
+        // Buku yang sudah pernah masuk transaksi tidak boleh dihapus agar
+        // riwayat peminjaman/pengembalian tetap utuh (FK memakai ON DELETE RESTRICT).
+        if ($buku->detailPeminjaman()->exists() || $buku->kondisiBukuKembali()->exists()) {
+            return back()->with('error', 'Buku "' . $buku->judul . '" tidak dapat dihapus karena masih memiliki riwayat peminjaman atau pengembalian.');
+        }
+
+        try {
+            $buku->delete();
+        } catch (QueryException $e) {
+            return back()->with('error', 'Buku tidak dapat dihapus karena masih terkait dengan data transaksi.');
+        }
+
         return redirect()->route('buku.index')->with('success', 'Buku berhasil dihapus dari katalog.');
     }
 }

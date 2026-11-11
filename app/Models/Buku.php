@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Buku extends Model
 {
@@ -25,4 +26,14 @@ class Buku extends Model
         'harga',
         'lokasi_rak',
     ];
+
+    public function detailPeminjaman(): HasMany
+    {
+        return $this->hasMany(DetailPeminjaman::class, 'kode_buku', 'kode_buku');
+    }
+
+    public function kondisiBukuKembali(): HasMany
+    {
+        return $this->hasMany(KondisiBukuKembali::class, 'kode_buku', 'kode_buku');
+    }
 }

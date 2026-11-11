@@ -29,6 +29,15 @@
         .nav-link.active {
             font-weight: 600;
         }
+        .form-label { margin-bottom: .4rem; }
+        .form-control, .form-select { min-height: 42px; }
+        .invalid-feedback { display: block; }
+        .form-text { font-size: .8rem; }
+        @media (max-width: 576px) {
+            .card-body { padding: 1rem; }
+            .form-actions { flex-direction: column-reverse; gap: .75rem; }
+            .form-actions .btn { width: 100%; }
+        }
     </style>
 </head>
 <body>
@@ -48,17 +57,24 @@
                 @auth
                     <!-- MENU NAVIGASI UTAMA -->
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
+                                <i class="bi bi-speedometer2 me-1"></i> Dashboard
+                            </a>
+                        </li>
                         {{-- MASTER DATA --}}
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('buku.*') ? 'active' : '' }}" href="{{ route('buku.index') }}">
                                 <i class="bi bi-journal-bookmark me-1"></i> Katalog Buku
                             </a>
                         </li>
+                        @if(Auth::user()->role === 'Admin')
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('mahasiswa.*') ? 'active' : '' }}" href="{{ route('mahasiswa.index') }}">
                                 <i class="bi bi-people me-1"></i> Mahasiswa
                             </a>
                         </li>
+                        @endif
 
                         {{-- TRANSAKSI --}}
                         <li class="nav-item">
@@ -109,21 +125,6 @@
     <!-- CONTENT BODY CONTAINER -->
     <main class="py-4">
         <div class="container">
-            <!-- FLASH MESSAGES ALERT -->
-            @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-                    <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-
-            @if(session('error'))
-                <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ session('error') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-
             <!-- KONTEN UTAMA HALAMAN -->
             @yield('content')
         </div>
@@ -162,5 +163,30 @@
 
     <!-- Bootstrap 5.3 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script>
+        function showToast(message, type = 'info') {
+            const styles = {
+                success: { background: 'linear-gradient(135deg, #198754, #20c997)', icon: '✓' },
+                error: { background: 'linear-gradient(135deg, #dc3545, #fd7e14)', icon: '!' },
+                info: { background: 'linear-gradient(135deg, #0d6efd, #6610f2)', icon: 'i' }
+            };
+            const style = styles[type] || styles.info;
+            Toastify({
+                text: `${style.icon}  ${message}`,
+                duration: 4500,
+                close: true,
+                gravity: 'top',
+                position: 'right',
+                stopOnFocus: true,
+                style: { background: style.background, borderRadius: '10px', boxShadow: '0 8px 24px rgba(0,0,0,.18)' }
+            }).showToast();
+        }
+        @if(session('success')) showToast(@json(session('success')), 'success'); @endif
+        @if(session('error')) showToast(@json(session('error')), 'error'); @endif
+        @if(session('info')) showToast(@json(session('info')), 'info'); @endif
+    </script>
+    @stack('scripts')
 </body>
 </html>

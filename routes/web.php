@@ -41,14 +41,18 @@ Route::middleware(['auth'])->group(function () {
 
     // MASTER DATA: Buku & Mahasiswa
     Route::resource('buku', BukuController::class)->except(['show']);
-    Route::resource('mahasiswa', MahasiswaController::class)->except(['show']);
+    Route::resource('mahasiswa', MahasiswaController::class)->except(['show'])->middleware('role:Admin');
 
     // MASTER DATA: User/Petugas (Pengaturan Akses Admin)
     Route::resource('user', UserController::class)->except(['show']);
 
     // TRANSAKSI: Peminjaman Buku
-    Route::resource('peminjaman', PeminjamanController::class);
-    Route::post('peminjaman/{id}/perpanjang', [PeminjamanController::class, 'perpanjang'])->name('peminjaman.perpanjang');
+    // Admin hanya dapat melihat/export data peminjaman. Mutasi hanya untuk Pustakawan.
+    Route::resource('peminjaman', PeminjamanController::class)->only(['index', 'show']);
+    Route::resource('peminjaman', PeminjamanController::class)->only(['create', 'store', 'edit', 'update', 'destroy'])->middleware('role:Pustakawan');
+    Route::get('peminjaman-export/pdf', [PeminjamanController::class, 'exportPdf'])->name('peminjaman.export.pdf');
+    Route::get('peminjaman-export/csv', [PeminjamanController::class, 'exportCsv'])->name('peminjaman.export.csv');
+    Route::post('peminjaman/{id}/perpanjang', [PeminjamanController::class, 'perpanjang'])->middleware('role:Pustakawan')->name('peminjaman.perpanjang');
 
     // TRANSAKSI: Pengembalian Buku
     Route::get('pengembalian/create/{id_peminjaman}', [PengembalianController::class, 'create'])->name('pengembalian.create');

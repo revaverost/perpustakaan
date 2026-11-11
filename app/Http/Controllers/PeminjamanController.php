@@ -9,6 +9,7 @@ use App\Models\Mahasiswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 
 class PeminjamanController extends Controller
@@ -16,13 +17,54 @@ class PeminjamanController extends Controller
     /**
      * Menampilkan daftar transaksi peminjaman.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $peminjaman = Peminjaman::with(['mahasiswa', 'user', 'detailPeminjaman.buku'])
+        $query = $this->filteredQuery($request);
+        $peminjaman = (clone $query)
             ->latest('id_peminjaman')
-            ->paginate(10);
+            ->paginate(10)
+            ->withQueryString();
 
         return view('peminjaman.index', compact('peminjaman'));
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $peminjaman = $this->filteredQuery($request)->latest('id_peminjaman')->get();
+        return Pdf::loadView('peminjaman.export-pdf', compact('peminjaman'))
+            ->setPaper('a4', 'landscape')
+            ->download('laporan-peminjaman-' . now()->format('Ymd-His') . '.pdf');
+    }
+
+    public function exportCsv(Request $request)
+    {
+        $peminjaman = $this->filteredQuery($request)->latest('id_peminjaman')->get();
+        $filename = 'laporan-peminjaman-' . now()->format('Ymd-His') . '.csv';
+
+        return response()->streamDownload(function () use ($peminjaman) {
+            $handle = fopen('php://output', 'w');
+            fputcsv($handle, ['ID', 'NIM', 'Nama Anggota', 'Buku', 'Tanggal Pinjam', 'Tenggat', 'Petugas', 'Status']);
+            foreach ($peminjaman as $item) {
+                fputcsv($handle, [
+                    $item->id_peminjaman,
+                    $item->nim,
+                    $item->mahasiswa->nama ?? '-',
+                    $item->detailPeminjaman->map(fn ($detail) => ($detail->buku->judul ?? $detail->kode_buku) . ' (x' . $detail->jumlah . ')')->implode('; '),
+                    $item->tgl_pinjam,
+                    $item->tgl_tenggat,
+                    $item->user->nama ?? $item->nip,
+                    $item->status,
+                ]);
+            }
+            fclose($handle);
+        }, $filename, ['Content-Type' => 'text/csv; charset=UTF-8']);
+    }
+
+    private function filteredQuery(Request $request)
+    {
+        return Peminjaman::with(['mahasiswa', 'user', 'detailPeminjaman.buku'])
+            ->when($request->filled('tanggal_mulai'), fn ($query) => $query->whereDate('tgl_pinjam', '>=', $request->tanggal_mulai))
+            ->when($request->filled('tanggal_akhir'), fn ($query) => $query->whereDate('tgl_pinjam', '<=', $request->tanggal_akhir));
     }
 
     /**
