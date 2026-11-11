@@ -41,7 +41,7 @@
                                 <a href="{{ route('user.edit', $u->nip) }}" class="btn btn-sm btn-outline-warning me-1">
                                     <i class="bi bi-pencil"></i> Edit
                                 </a>
-                                <form action="{{ route('user.destroy', $u->nip) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus petugas ini?')">
+                                <form action="{{ route('user.destroy', $u->nip) }}" method="POST" class="d-inline form-hapus" data-pesan="Yakin ingin menghapus petugas ini?">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-outline-danger">

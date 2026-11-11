@@ -161,6 +161,22 @@
     </div>
     @endauth
 
+    <div class="modal fade" id="modalKonfirmasiHapus" tabindex="-1" aria-labelledby="modalKonfirmasiHapusLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="modalKonfirmasiHapusLabel"><i class="bi bi-trash3 me-2"></i>Konfirmasi Hapus</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body text-center py-4" id="pesanKonfirmasiHapus">Data yang dipilih akan dihapus.</div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-danger" id="btnKonfirmasiHapus"><i class="bi bi-trash3 me-1"></i>Hapus</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap 5.3 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
@@ -186,6 +202,22 @@
         @if(session('success')) showToast(@json(session('success')), 'success'); @endif
         @if(session('error')) showToast(@json(session('error')), 'error'); @endif
         @if(session('info')) showToast(@json(session('info')), 'info'); @endif
+
+        document.querySelectorAll('.form-hapus, .form-konfirmasi').forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                document.getElementById('pesanKonfirmasiHapus').textContent = form.dataset.pesan || 'Data yang dipilih akan dihapus.';
+                document.getElementById('modalKonfirmasiHapusLabel').innerHTML = '<i class="bi bi-exclamation-circle me-2"></i>Konfirmasi ' + (form.dataset.aksi || 'Hapus');
+                document.getElementById('btnKonfirmasiHapus').innerHTML = '<i class="bi bi-check-circle me-1"></i>' + (form.dataset.aksi || 'Hapus');
+                const modalElement = document.getElementById('modalKonfirmasiHapus');
+                const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+                document.getElementById('btnKonfirmasiHapus').onclick = function () {
+                    modal.hide();
+                    form.submit();
+                };
+                modal.show();
+            });
+        });
     </script>
     @stack('scripts')
 </body>

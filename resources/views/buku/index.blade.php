@@ -55,7 +55,7 @@
                                 <a href="{{ route('buku.edit', $b->kode_buku) }}" class="btn btn-sm btn-outline-warning me-1">
                                     <i class="bi bi-pencil"></i> Edit
                                 </a>
-                                <form action="{{ route('buku.destroy', $b->kode_buku) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus buku ini?')">
+                                <form action="{{ route('buku.destroy', $b->kode_buku) }}" method="POST" class="d-inline form-hapus" data-pesan="Yakin ingin menghapus buku ini?">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-outline-danger">

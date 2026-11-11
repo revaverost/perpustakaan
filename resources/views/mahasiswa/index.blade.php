@@ -51,7 +51,7 @@
                                 <a href="{{ route('mahasiswa.edit', $m->nim) }}" class="btn btn-sm btn-outline-warning me-1">
                                     <i class="bi bi-pencil"></i> Edit
                                 </a>
-                                <form action="{{ route('mahasiswa.destroy', $m->nim) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus anggota ini?')">
+                                 <form action="{{ route('mahasiswa.destroy', $m->nim) }}" method="POST" class="d-inline form-hapus" data-pesan="Yakin ingin menghapus anggota ini?">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-outline-danger">

@@ -90,7 +90,7 @@
                                             <a href="{{ route('pengembalian.create', $p->id_peminjaman) }}" class="btn btn-sm btn-outline-success">
                                                 <i class="bi bi-box-arrow-in-down-left me-1"></i> Kembalikan
                                             </a>
-                                            <form action="{{ route('peminjaman.perpanjang', $p->id_peminjaman) }}" method="POST" class="d-inline" onsubmit="return confirm('Perpanjang masa pinjam 7 hari?')">
+                                            <form action="{{ route('peminjaman.perpanjang', $p->id_peminjaman) }}" method="POST" class="d-inline form-konfirmasi" data-pesan="Perpanjang masa pinjam 7 hari?" data-aksi="Perpanjang">
                                                 @csrf
                                                 <button type="submit" class="btn btn-sm btn-outline-primary">
                                                     <i class="bi bi-clock-history"></i> Perpanjang
