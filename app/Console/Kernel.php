@@ -12,7 +12,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command('notifikasi:kirim-harian')->dailyAt('07:00');
+        // Jalankan pengingat H-1 setiap hari pukul 08:00 pagi
+        $schedule->command('siperpus:pengingat-tenggat')
+            ->dailyAt('08:00')
+            ->timezone('Asia/Jakarta');
     }
 
     /**

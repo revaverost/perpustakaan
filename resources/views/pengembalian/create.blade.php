@@ -8,7 +8,18 @@
     </div>
 </div>
 
-<form action="{{ route('pengembalian.store') }}" method="POST">
+@if ($errors->any())
+    <div class="alert alert-danger shadow-sm">
+        <strong>Gagal memproses pengembalian:</strong>
+        <ul class="mb-0 mt-1">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+<form action="{{ route('pengembalian.store') }}" method="POST" id="form-pengembalian">
     @csrf
     <input type="hidden" name="id_peminjaman" value="{{ $peminjaman->id_peminjaman }}">
 
@@ -40,7 +51,7 @@
                     <!-- INPUT TANGGAL KEMBALI -->
                     <div class="mb-3">
                         <label for="tgl_kembali" class="form-label fw-bold">Tanggal Pengembalian</label>
-                        <input type="date" name="tgl_kembali" id="tgl_kembali" class="form-control" value="{{ date('Y-m-d') }}" required>
+                        <input type="date" name="tgl_kembali" id="tgl_kembali" class="form-control" value="{{ old('tgl_kembali', date('Y-m-d')) }}" required>
                     </div>
 
                     <!-- RINGKASAN CALCULATOR DENDA -->
@@ -50,6 +61,10 @@
                         <div class="d-flex justify-content-between mb-2">
                             <span>Status Pengembalian:</span>
                             <span id="badge-status-terlambat" class="badge bg-success">Tepat Waktu</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Buku Dipilih:</span>
+                            <span class="fw-bold"><span id="text-jumlah-dipilih">0</span> Buku</span>
                         </div>
                         <div class="d-flex justify-content-between mb-2">
                             <span>Terlambat:</span>
@@ -78,37 +93,61 @@
         <!-- DAFTAR BUKU & PEMILIHAN KONDISI -->
         <div class="col-md-7 mb-4">
             <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-dark text-white fw-bold">
-                    <i class="bi bi-book me-1"></i> Kondisi Fisik Buku
+                <div class="card-header bg-dark text-white fw-bold d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-book me-1"></i> Pilih Buku yang Dikembalikan</span>
+                    <div class="form-check form-check-inline mb-0">
+                        <input class="form-check-input" type="checkbox" id="check-semua-buku" checked>
+                        <label class="form-check-label small fw-normal text-white" for="check-semua-buku">Pilih Semua</label>
+                    </div>
                 </div>
                 <div class="card-body p-3">
-                    @foreach($peminjaman->detailPeminjaman as $index => $detail)
-                        <div class="border rounded p-3 mb-3 bg-white shadow-sm">
-                            <input type="hidden" name="kondisi[{{ $index }}][kode_buku]" value="{{ $detail->kode_buku }}">
+                    @php
+                        // Ambil hanya buku yang belum dikembalikan
+                        $bukuBelumKembali = $peminjaman->detailPeminjaman->filter(function ($detail) use ($kodeBukuSudahKembali) {
+                            return !in_array($detail->kode_buku, $kodeBukuSudahKembali ?? []);
+                        })->values();
+                    @endphp
+
+                    @foreach($bukuBelumKembali as $index => $detail)
+                        <div class="border rounded p-3 mb-3 shadow-sm item-card-buku bg-white" data-index="{{ $index }}">
+                            <input type="hidden" name="items[{{ $index }}][kode_buku]" value="{{ $detail->kode_buku }}">
                             
                             <div class="d-flex justify-content-between align-items-start mb-2">
-                                <div>
-                                    <h6 class="fw-bold mb-1">{{ $detail->buku->judul }}</h6>
-                                    <small class="text-muted">Kode: <code>{{ $detail->kode_buku }}</code> | Harga: <strong>Rp {{ number_format($detail->buku->harga, 0, ',', '.') }}</strong></small>
+                                <div class="form-check">
+                                    <input class="form-check-input check-pilih-buku"
+                                           type="checkbox"
+                                           name="items[{{ $index }}][dipilih]"
+                                           value="1"
+                                           id="check-buku-{{ $index }}"
+                                           data-index="{{ $index }}"
+                                           checked>
+                                    <label class="form-check-label" for="check-buku-{{ $index }}">
+                                        <h6 class="fw-bold mb-1">{{ $detail->buku->judul }}</h6>
+                                        <small class="text-muted">
+                                            Kode: <code>{{ $detail->kode_buku }}</code> | 
+                                            Jumlah: <strong>{{ $detail->jumlah }}</strong> | 
+                                            Harga: <strong>Rp {{ number_format($detail->buku->harga, 0, ',', '.') }}</strong>
+                                        </small>
+                                    </label>
                                 </div>
                             </div>
 
-                            <div class="row g-2 align-items-center">
+                            <div class="row g-2 align-items-center mt-2 panel-input-kondisi" id="panel-kondisi-{{ $index }}">
                                 <div class="col-md-6">
                                     <label class="form-label small text-muted mb-1">Kondisi Buku</label>
-                                    <select name="kondisi[{{ $index }}][status]" class="form-select form-select-sm select-kondisi" data-index="{{ $index }}" required>
-                                        <option value="Baik" selected>Baik</option>
-                                        <option value="Rusak Ringan">Rusak Ringan</option>
-                                        <option value="Rusak Berat">Rusak Berat</option>
-                                        <option value="Hilang">Hilang</option>
+                                    <select name="items[{{ $index }}][kondisi]" class="form-select form-select-sm select-kondisi" data-index="{{ $index }}" required>
+                                        <option value="Baik" {{ old("items.$index.kondisi", 'Baik') === 'Baik' ? 'selected' : '' }}>Baik</option>
+                                        <option value="Rusak Ringan" {{ old("items.$index.kondisi") === 'Rusak Ringan' ? 'selected' : '' }}>Rusak Ringan</option>
+                                        <option value="Rusak Berat" {{ old("items.$index.kondisi") === 'Rusak Berat' ? 'selected' : '' }}>Rusak Berat</option>
+                                        <option value="Hilang" {{ old("items.$index.kondisi") === 'Hilang' ? 'selected' : '' }}>Hilang</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label small text-muted mb-1">Denda Fisik (Rp)</label>
-                                    <input type="number" name="kondisi[{{ $index }}][denda_fisik]" id="denda-fisik-{{ $index }}" class="form-control form-control-sm input-denda-fisik" value="0" min="0" data-index="{{ $index }}">
+                                    <input type="number" name="items[{{ $index }}][denda_fisik]" id="denda-fisik-{{ $index }}" class="form-control form-control-sm input-denda-fisik" value="{{ old("items.$index.denda_fisik", 0) }}" min="0" data-index="{{ $index }}" required>
                                 </div>
                                 <div class="col-md-12 mt-2">
-                                    <input type="text" name="kondisi[{{ $index }}][keterangan]" class="form-control form-control-sm" placeholder="Catatan kondisi (opsional)...">
+                                    <input type="text" name="items[{{ $index }}][keterangan]" class="form-control form-control-sm" value="{{ old("items.$index.keterangan") }}" placeholder="Catatan kondisi (opsional)...">
                                 </div>
                             </div>
                         </div>
@@ -116,7 +155,7 @@
 
                     <div class="text-end mt-4">
                         <a href="{{ route('peminjaman.index') }}" class="btn btn-secondary me-2">Batal</a>
-                        <button type="submit" class="btn btn-success px-4">
+                        <button type="submit" class="btn btn-success px-4" id="btn-submit-pengembalian">
                             <i class="bi bi-check-circle me-1"></i> Proses Pengembalian
                         </button>
                     </div>
@@ -126,7 +165,14 @@
     </div>
 </form>
 
-<!-- JAVASCRIPT LOGIKA REAL-TIME CALCULATOR -->
+@php
+    $hargaBukuData = [];
+    foreach ($peminjaman->detailPeminjaman as $index => $detail) {
+        $hargaBukuData[(string) $index] = $detail->buku->harga ?? 0;
+    }
+@endphp
+
+<!-- JAVASCRIPT LOGIKA REAL-TIME CALCULATOR & CHECKLIST BUKU -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const inputTglKembali = document.getElementById('tgl_kembali');
@@ -135,24 +181,62 @@ document.addEventListener('DOMContentLoaded', function () {
     tglTenggat.setHours(0, 0, 0, 0);
 
     const badgeStatus = document.getElementById('badge-status-terlambat');
+    const textJumlahDipilih = document.getElementById('text-jumlah-dipilih');
     const textHariTerlambat = document.getElementById('text-hari-terlambat');
     const textDendaTelat = document.getElementById('text-denda-telat');
     const textDendaFisik = document.getElementById('text-denda-fisik');
     const textTotalDenda = document.getElementById('text-total-denda');
 
+    const checkSemua = document.getElementById('check-semua-buku');
+    const checkBukuList = document.querySelectorAll('.check-pilih-buku:not(:disabled)');
     const selectKondisi = document.querySelectorAll('.select-kondisi');
     const inputDendaFisik = document.querySelectorAll('.input-denda-fisik');
+    const btnSubmit = document.getElementById('btn-submit-pengembalian');
 
-    // Mapping harga buku untuk pengisian denda otomatis saat buku hilang/rusak
-    const hargaBukuMap = {
-        @foreach($peminjaman->detailPeminjaman as $index => $detail)
-            "{{ $index }}": {{ $detail->buku->harga ?? 0 }},
-        @endforeach
-    };
+    const hargaBukuMap = @json($hargaBukuData);
 
     let dendaTelat = 0;
 
-    // 1. Fungsi Hitung Keterlambatan Real-Time
+    // 1. Toggle Aktif/Nonaktif Input Kondisi Berdasarkan Checkbox Buku
+    function updateStatusItemBuku(checkbox) {
+        const idx = checkbox.dataset.index;
+        const panel = document.getElementById(`panel-kondisi-${idx}`);
+        const card = checkbox.closest('.item-card-buku');
+
+        if (panel) {
+            const inputs = panel.querySelectorAll('select, input');
+            inputs.forEach(el => {
+                el.disabled = !checkbox.checked;
+            });
+            panel.style.opacity = checkbox.checked ? '1' : '0.45';
+        }
+
+        if (card) {
+            card.classList.toggle('border-primary', checkbox.checked);
+        }
+    }
+
+    checkBukuList.forEach(chk => {
+        chk.addEventListener('change', function () {
+            updateStatusItemBuku(this);
+            // Sinkronkan status checkbox "Pilih Semua"
+            checkSemua.checked = Array.from(checkBukuList).every(c => c.checked);
+            hitungTotalSemua();
+        });
+        updateStatusItemBuku(chk);
+    });
+
+    if (checkSemua) {
+        checkSemua.addEventListener('change', function () {
+            checkBukuList.forEach(chk => {
+                chk.checked = checkSemua.checked;
+                updateStatusItemBuku(chk);
+            });
+            hitungTotalSemua();
+        });
+    }
+
+    // 2. Fungsi Hitung Keterlambatan Real-Time
     function hitungTerlambat() {
         const valKembali = inputTglKembali.value;
         if (!valKembali) return;
@@ -179,7 +263,7 @@ document.addEventListener('DOMContentLoaded', function () {
         hitungTotalSemua();
     }
 
-    // 2. Listener Pilihan Kondisi Fisik Buku
+    // 3. Listener Pilihan Kondisi Fisik Buku
     selectKondisi.forEach(select => {
         select.addEventListener('change', function () {
             const idx = this.dataset.index;
@@ -187,9 +271,9 @@ document.addEventListener('DOMContentLoaded', function () {
             const hargaBuku = hargaBukuMap[idx] || 0;
 
             if (this.value === 'Hilang') {
-                inputDenda.value = hargaBuku; // Denda seharga buku
+                inputDenda.value = hargaBuku;
             } else if (this.value === 'Rusak Berat') {
-                inputDenda.value = Math.round(hargaBuku * 0.5); // 50% harga buku
+                inputDenda.value = Math.round(hargaBuku * 0.5);
             } else if (this.value === 'Rusak Ringan') {
                 inputDenda.value = 15000;
             } else {
@@ -199,26 +283,47 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // 3. Listener Perubahan Manual pada Denda Fisik
+    // 4. Listener Perubahan Manual pada Denda Fisik
     inputDendaFisik.forEach(input => {
         input.addEventListener('input', hitungTotalSemua);
     });
 
-    // 4. Hitung Total Akhir (Denda Telat + Denda Fisik)
+    // 5. Hitung Total Akhir (Hanya menghitung buku yang dicentang)
     function hitungTotalSemua() {
         let totalFisik = 0;
-        inputDendaFisik.forEach(input => {
-            totalFisik += parseFloat(input.value) || 0;
+        let jumlahDipilih = 0;
+
+        checkBukuList.forEach(chk => {
+            if (chk.checked) {
+                jumlahDipilih++;
+                const idx = chk.dataset.index;
+                const inputDenda = document.getElementById(`denda-fisik-${idx}`);
+                if (inputDenda) {
+                    totalFisik += parseFloat(inputDenda.value) || 0;
+                }
+            }
         });
 
-        const totalAkumulasi = dendaTelat + totalFisik;
+        textJumlahDipilih.textContent = jumlahDipilih;
+        btnSubmit.disabled = jumlahDipilih === 0;
+
+        const aktifDendaTelat = jumlahDipilih > 0 ? dendaTelat : 0;
+        const totalAkumulasi = aktifDendaTelat + totalFisik;
+
+        textDendaTelat.textContent = new Intl.NumberFormat('id-ID').format(aktifDendaTelat);
         textDendaFisik.textContent = new Intl.NumberFormat('id-ID').format(totalFisik);
         textTotalDenda.textContent = new Intl.NumberFormat('id-ID').format(totalAkumulasi);
     }
 
-    // Jalankan kalkulasi pertama kali saat halaman dimuat
     inputTglKembali.addEventListener('change', hitungTerlambat);
     hitungTerlambat();
 });
 </script>
 @endsection
+
+@php
+    $hargaBukuData = [];
+    foreach ($bukuBelumKembali as $index => $detail) {
+        $hargaBukuData[(string) $index] = $detail->buku->harga ?? 0;
+    }
+@endphp

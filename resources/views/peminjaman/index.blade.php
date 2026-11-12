@@ -52,8 +52,15 @@
                                 <div class="text-muted small">NIM: {{ $p->nim }}</div>
                             </td>
                             <td>
+                                @php
+                                    $kodeSudahKembali = $p->pengembalian->pluck('kode_buku')->toArray();
+                                    $sisaBuku = $p->detailPeminjaman->reject(function ($detail) use ($kodeSudahKembali) {
+                                        return in_array($detail->kode_buku, $kodeSudahKembali);
+                                    });
+                                @endphp
+
                                 <ul class="list-unstyled mb-0 small">
-                                    @foreach($p->detailPeminjaman as $detail)
+                                    @foreach($sisaBuku as $detail)
                                         <li>
                                             <i class="bi bi-book me-1 text-primary"></i> 
                                             {{ $detail->buku->judul ?? $detail->kode_buku }} 

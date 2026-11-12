@@ -2,13 +2,13 @@
 
 @section('content')
 <div class="row mb-4 align-items-center">
-    <div class="col-md-6">
+    <div class="col-md-5">
         <h4 class="fw-bold mb-0">Daftar Tagihan Denda</h4>
         <p class="text-muted small mb-0">Kelola denda keterlambatan pengembalian dan kerusakan buku</p>
     </div>
     
-    {{-- Filter Status Bayar --}}
-    <div class="col-md-6 text-md-end mt-3 mt-md-0">
+    {{-- Filter Status Bayar & Tombol Export --}}
+    <div class="col-md-7 text-md-end mt-3 mt-md-0 d-flex flex-wrap justify-content-md-end gap-2">
         <div class="btn-group shadow-sm" role="group" aria-label="Filter Status">
             <a href="{{ route('denda.index', ['status' => 'Belum Lunas']) }}" 
                class="btn btn-outline-primary btn-sm {{ $status === 'Belum Lunas' ? 'active' : '' }}">
@@ -23,6 +23,11 @@
                 Semua Data
             </a>
         </div>
+
+        <div>
+                  <a href="{{ route('denda.export.pdf', request()->query()) }}" class="btn btn-outline-danger shadow-sm"><i class="bi bi-file-earmark-pdf me-1"></i> Export PDF</a>
+            <a href="{{ route('denda.export.csv', request()->query()) }}" class="btn btn-outline-success shadow-sm"><i class="bi bi-file-earmark-spreadsheet me-1"></i> Export CSV</a>
+        </div>
     </div>
 </div>
 
@@ -35,9 +40,9 @@
                         <th class="ps-3">ID Denda</th>
                         <th>Mahasiswa Peminjam</th>
                         <th>Rincian Keterlambatan</th>
+                        <th>Keterangan / Alasan</th>
                         <th>Total Denda</th>
                         <th>Status</th>
-                        <th>Keterangan / Alasan</th>
                         <th>Tanggal Bayar / Metode</th>
                         <th>Petugas (NIP)</th>
                         <th class="text-center pe-3">Aksi</th>
@@ -66,13 +71,19 @@
                                 </div>
                             </td>
                             <td>
-                                <!-- TAMPILKAN KETERANGAN DENDA -->
                                 <small class="text-muted">{{ $d->keterangan ?? '-' }}</small>
                             </td>
                             <td>
                                 <span class="fw-bold fs-6 text-danger">
                                     Rp {{ number_format($d->jumlah_denda, 0, ',', '.') }}
                                 </span>
+                                <span class="fw-bold fs-6 text-danger">
+                                    Rp {{ number_format($d->jumlah_denda, 0, ',', '.') }}
+                                </span>
+                                <div class="text-muted small">
+                                    Telat: Rp {{ number_format($d->denda_terlambat, 0, ',', '.') }} |
+                                    Fisik: Rp {{ number_format($d->denda_fisik, 0, ',', '.') }}
+                                </div>
                             </td>
                             <td>
                                 @if($d->status_bayar === 'Lunas')
@@ -114,7 +125,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="text-center py-4 text-muted">
+                            <td colspan="9" class="text-center py-4 text-muted">
                                 <i class="bi bi-cash-coin fs-2 d-block mb-2 text-secondary"></i>
                                 Tidak ada catatan denda {{ $status !== 'Semua' ? 'dengan status ' . strtolower($status) : '' }}.
                             </td>

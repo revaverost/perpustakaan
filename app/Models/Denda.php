@@ -2,24 +2,23 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Denda extends Model
 {
-    use HasFactory;
-
     protected $table = 'denda';
     protected $primaryKey = 'id_denda';
 
     protected $fillable = [
         'id_pengembalian',
+        'nip',
+        'denda_terlambat',
+        'denda_fisik',
         'jumlah_denda',
         'status_bayar',
         'keterangan',
         'tgl_bayar',
         'metode_bayar',
-        'nip',
     ];
 
     public function pengembalian()

@@ -6,6 +6,12 @@
         <h4 class="fw-bold mb-0">Riwayat Pengembalian Buku</h4>
         <p class="text-muted small mb-0">Catatan pengembalian buku dan status keterlambatan</p>
     </div>
+    <div class="col-md-6 text-md-end mt-2 mt-md-0">
+        <div class="btn-group me-2">
+            <a href="{{ route('pengembalian.export.pdf', request()->query()) }}" class="btn btn-outline-danger shadow-sm"><i class="bi bi-file-earmark-pdf me-1"></i> Export PDF</a>
+            <a href="{{ route('pengembalian.export.csv', request()->query()) }}" class="btn btn-outline-success shadow-sm"><i class="bi bi-file-earmark-spreadsheet me-1"></i> Export CSV</a>
+        </div>
+    </div>
 </div>
 
 <div class="card border-0 shadow-sm">
@@ -45,14 +51,10 @@
                             </td>
                             <td>
                                 <ul class="list-unstyled mb-0 small">
-                                    @foreach($k->kondisiBukuKembali as $kondisi)
-                                        <li>
-                                            <code>[{{ $kondisi->kode_buku }}]</code>: 
-                                            <span class="badge {{ $kondisi->kondisi === 'Baik' ? 'bg-info text-dark' : 'bg-warning text-dark' }}">
-                                                {{ $kondisi->kondisi }}
-                                            </span>
-                                        </li>
-                                    @endforeach
+                                        <code>[{{ $k->kode_buku }}]</code> {{ $k->buku->judul ?? '' }}:
+                                        <span class="badge {{ $k->kondisi === 'Baik' ? 'bg-info text-dark' : 'bg-warning text-dark' }}">
+                                            {{ $k->kondisi }}
+                                        </span>
                                 </ul>
                             </td>
                             <td>

@@ -2,40 +2,55 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Peminjaman;
-use App\Models\DetailPeminjaman;
+use App\Mail\NotifikasiPeminjamanMail;
 use App\Models\Buku;
+use App\Models\DetailPeminjaman;
 use App\Models\Mahasiswa;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Peminjaman;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class PeminjamanController extends Controller
 {
     /**
-     * Menampilkan daftar transaksi peminjaman.
+     * Menampilkan daftar transaksi peminjaman aktif.
      */
     public function index(Request $request)
     {
         $query = $this->filteredQuery($request);
         $peminjaman = (clone $query)
+            ->with(['pengembalian'])
+            ->where('status', 'Dipinjam')
             ->latest('id_peminjaman')
             ->paginate(10)
-            ->withQueryString();
+            ->appends($request->query());
 
         return view('peminjaman.index', compact('peminjaman'));
     }
 
+    /**
+     * Export laporan peminjaman ke format PDF.
+     */
     public function exportPdf(Request $request)
     {
-        $peminjaman = $this->filteredQuery($request)->latest('id_peminjaman')->get();
-        return Pdf::loadView('peminjaman.export-pdf', compact('peminjaman'))
-            ->setPaper('a4', 'landscape')
-            ->download('laporan-peminjaman-' . now()->format('Ymd-His') . '.pdf');
+        $peminjaman = Peminjaman::with(['mahasiswa', 'detailPeminjaman.buku', 'user'])
+            ->latest('id_peminjaman')
+            ->get();
+
+        $pdf = Pdf::loadView('peminjaman.export-pdf', compact('peminjaman'))
+            ->setPaper('a4', 'landscape');
+
+        return $pdf->download('laporan-peminjaman-' . now()->format('Y-m-d') . '.pdf');
     }
 
+    /**
+     * Export laporan peminjaman ke format CSV.
+     */
     public function exportCsv(Request $request)
     {
         $peminjaman = $this->filteredQuery($request)->latest('id_peminjaman')->get();
@@ -49,7 +64,7 @@ class PeminjamanController extends Controller
                     $item->id_peminjaman,
                     $item->nim,
                     $item->mahasiswa->nama ?? '-',
-                    $item->detailPeminjaman->map(fn ($detail) => ($detail->buku->judul ?? $detail->kode_buku) . ' (x' . $detail->jumlah . ')')->implode('; '),
+                    $item->detailPeminjaman->map(fn($detail) => ($detail->buku->judul ?? $detail->kode_buku) . ' (x' . $detail->jumlah . ')')->implode('; '),
                     $item->tgl_pinjam,
                     $item->tgl_tenggat,
                     $item->user->nama ?? $item->nip,
@@ -63,8 +78,8 @@ class PeminjamanController extends Controller
     private function filteredQuery(Request $request)
     {
         return Peminjaman::with(['mahasiswa', 'user', 'detailPeminjaman.buku'])
-            ->when($request->filled('tanggal_mulai'), fn ($query) => $query->whereDate('tgl_pinjam', '>=', $request->tanggal_mulai))
-            ->when($request->filled('tanggal_akhir'), fn ($query) => $query->whereDate('tgl_pinjam', '<=', $request->tanggal_akhir));
+            ->when($request->filled('tanggal_mulai'), fn($query) => $query->whereDate('tgl_pinjam', '>=', $request->tanggal_mulai))
+            ->when($request->filled('tanggal_akhir'), fn($query) => $query->whereDate('tgl_pinjam', '<=', $request->tanggal_akhir));
     }
 
     /**
@@ -79,11 +94,10 @@ class PeminjamanController extends Controller
     }
 
     /**
-     * Menyimpan transaksi peminjaman baru dengan DB Transaction.
+     * Menyimpan transaksi peminjaman baru dengan DB Transaction dan mengirim email notifikasi.
      */
     public function store(Request $request)
     {
-        // 1. Validasi Input Dasar
         $request->validate([
             'nim' => 'required|exists:mahasiswa,nim',
             'buku' => 'required|array|min:1',
@@ -96,17 +110,13 @@ class PeminjamanController extends Controller
             'buku.*.jumlah.min' => 'Jumlah pinjam buku minimal 1.',
         ]);
 
-        // 2. Jalankan Database Transaction
         try {
-            DB::transaction(function () use ($request) {
-                // Ambil NIP user (Admin/Pustakawan) yang sedang login
+            $peminjaman = DB::transaction(function () use ($request) {
                 $nipPetugas = Auth::user()->nip ?? $request->nip;
-
-                // A. Buat Header Transaksi Peminjaman
                 $tglPinjam = Carbon::now();
-                $tglTenggat = $tglPinjam->copy()->addDays(14); // Tenggat otomatis 2 minggu
+                $tglTenggat = $tglPinjam->copy()->addDays(14);
 
-                $peminjaman = Peminjaman::create([
+                $pinjam = Peminjaman::create([
                     'nim' => $request->nim,
                     'nip' => $nipPetugas,
                     'tgl_pinjam' => $tglPinjam->toDateString(),
@@ -114,31 +124,41 @@ class PeminjamanController extends Controller
                     'status' => 'Dipinjam',
                 ]);
 
-                // B. Loop Detail Buku & Validasi Stok
                 foreach ($request->buku as $item) {
                     $buku = Buku::where('kode_buku', $item['kode_buku'])->lockForUpdate()->first();
 
-                    // Validasi Ketersediaan Stok
                     if ($buku->stok < $item['jumlah']) {
                         throw new \Exception("Stok buku '{$buku->judul}' tidak mencukupi. Sisa stok: {$buku->stok}.");
                     }
 
-                    // Simpan Detail Peminjaman
                     DetailPeminjaman::create([
-                        'id_peminjaman' => $peminjaman->id_peminjaman,
+                        'id_peminjaman' => $pinjam->id_peminjaman,
                         'kode_buku' => $item['kode_buku'],
                         'jumlah' => $item['jumlah'],
                     ]);
 
-                    // Kurangi Stok Buku
                     $buku->decrement('stok', $item['jumlah']);
                 }
+
+                return $pinjam;
             });
+
+            // Kirim notifikasi email setelah transaksi database sukses di-commit
+            $peminjamanBaru = Peminjaman::with(['mahasiswa', 'detailPeminjaman.buku', 'user'])
+                ->find($peminjaman->id_peminjaman);
+
+            if ($peminjamanBaru && !empty($peminjamanBaru->mahasiswa->email)) {
+                try {
+                    Mail::to($peminjamanBaru->mahasiswa->email)
+                        ->send(new NotifikasiPeminjamanMail($peminjamanBaru));
+                } catch (\Exception $e) {
+                    Log::error('Gagal mengirim email bukti peminjaman: ' . $e->getMessage());
+                }
+            }
 
             return redirect()->route('peminjaman.index')
                 ->with('success', 'Transaksi peminjaman berhasil disimpan! Tenggat pengembalian: 14 hari.');
         } catch (\Exception $e) {
-            // Transaction otomatis Rollback jika terjadi error/exception
             return back()->withInput()->with('error', 'Gagal memproses peminjaman: ' . $e->getMessage());
         }
     }
@@ -154,6 +174,9 @@ class PeminjamanController extends Controller
         return view('peminjaman.show', compact('peminjaman'));
     }
 
+    /**
+     * Memperpanjang tenggat waktu peminjaman selama 7 hari (maksimal 2 kali).
+     */
     public function perpanjang($id)
     {
         $peminjaman = Peminjaman::findOrFail($id);
@@ -162,13 +185,11 @@ class PeminjamanController extends Controller
             return back()->with('error', 'Transaksi yang sudah selesai tidak dapat diperpanjang.');
         }
 
-        // Batasi maksimal perpanjangan (Contoh: maksimal 2 kali)
         if ($peminjaman->jumlah_perpanjang >= 2) {
             return back()->with('error', 'Peminjaman ini sudah mencapai batas maksimal perpanjangan (2 kali).');
         }
 
-        // Tambah 7 hari ke tanggal tenggat & increment jumlah_perpanjang
-        $tglTenggatBaru = \Carbon\Carbon::parse($peminjaman->tgl_tenggat)->addDays(7);
+        $tglTenggatBaru = Carbon::parse($peminjaman->tgl_tenggat)->addDays(7);
 
         $peminjaman->update([
             'tgl_tenggat' => $tglTenggatBaru,

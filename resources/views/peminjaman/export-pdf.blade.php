@@ -1,1 +1,75 @@
-<!doctype html><html><head><meta charset="utf-8"><style>body{font-family:DejaVu Sans,sans-serif;font-size:10px}h2{text-align:center;color:#123b68}table{width:100%;border-collapse:collapse;margin-top:18px}th{background:#123b68;color:#fff}th,td{border:1px solid #bbb;padding:6px;text-align:left}tr:nth-child(even){background:#f2f5f8}.meta{text-align:center;color:#555}</style></head><body><h2>Laporan Data Peminjaman</h2><div class="meta">Dicetak {{ now()->format('d/m/Y H:i') }}</div><table><thead><tr><th>ID</th><th>NIM</th><th>Nama Anggota</th><th>Buku</th><th>Tanggal Pinjam</th><th>Tenggat</th><th>Petugas</th><th>Status</th></tr></thead><tbody>@foreach($peminjaman as $item)<tr><td>#{{ $item->id_peminjaman }}</td><td>{{ $item->nim }}</td><td>{{ $item->mahasiswa->nama ?? '-' }}</td><td>{{ $item->detailPeminjaman->map(fn($detail) => ($detail->buku->judul ?? $detail->kode_buku).' (x'.$detail->jumlah.')')->implode(', ') }}</td><td>{{ $item->tgl_pinjam }}</td><td>{{ $item->tgl_tenggat }}</td><td>{{ $item->user->nama ?? $item->nip }}</td><td>{{ $item->status }}</td></tr>@endforeach</tbody></table></body></html>
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: DejaVu Sans, sans-serif;
+            font-size: 10px;
+        }
+        h2 {
+            text-align: center;
+            color: #123b68;
+            margin-bottom: 4px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 18px;
+        }
+        th {
+            background: #123b68;
+            color: #fff;
+        }
+        th, td {
+            border: 1px solid #bbb;
+            padding: 6px;
+            text-align: left;
+        }
+        tr:nth-child(even) {
+            background: #f2f5f8;
+        }
+        .meta {
+            text-align: center;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <h2>Laporan Data Peminjaman</h2>
+    <div class="meta">Dicetak {{ now()->format('d/m/Y H:i') }}</div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>NIM</th>
+                <th>Nama Anggota</th>
+                <th>Buku</th>
+                <th>Tanggal Pinjam</th>
+                <th>Tenggat</th>
+                <th>Petugas</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($peminjaman as $item)
+                <tr>
+                    <td>#{{ $item->id_peminjaman }}</td>
+                    <td>{{ $item->nim }}</td>
+                    <td>{{ $item->mahasiswa->nama ?? '-' }}</td>
+                    <td>
+                        {{ $item->detailPeminjaman->map(function($detail) {
+                            return ($detail->buku->judul ?? $detail->kode_buku) . ' (x' . $detail->jumlah . ')';
+                        })->implode(', ') }}
+                    </td>
+                    <td>{{ $item->tgl_pinjam }}</td>
+                    <td>{{ $item->tgl_tenggat }}</td>
+                    <td>{{ $item->user->nama ?? $item->nip }}</td>
+                    <td>{{ $item->status }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+</body>
+</html>

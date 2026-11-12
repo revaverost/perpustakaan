@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\NotifikasiPengembalianMail;
+use App\Models\Buku;
+use App\Models\Denda;
 use App\Models\Peminjaman;
 use App\Models\Pengembalian;
-use App\Models\KondisiBukuKembali;
-use App\Models\Denda;
-use App\Models\Buku;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
+use Barryvdh\DomPDF\Facade\Pdf;
+
+
 
 class PengembalianController extends Controller
 {
@@ -22,7 +26,7 @@ class PengembalianController extends Controller
         $pengembalian = Pengembalian::with([
             'peminjaman.mahasiswa',
             'user',
-            'kondisiBukuKembali.buku',
+            'buku',
             'denda'
         ])
             ->latest('id_pengembalian')
@@ -36,131 +40,229 @@ class PengembalianController extends Controller
      */
     public function create($id_peminjaman)
     {
-        $peminjaman = Peminjaman::with(['mahasiswa', 'detailPeminjaman.buku'])->findOrFail($id_peminjaman);
+        $peminjaman = Peminjaman::with(['mahasiswa', 'detailPeminjaman.buku', 'pengembalian'])
+            ->where('status', 'Dipinjam')
+            ->findOrFail($id_peminjaman);
 
-        // Jika transaksi sudah selesai, kembalikan ke index
-        if ($peminjaman->status === 'Selesai') {
-            return redirect()->route('peminjaman.index')->with('error', 'Transaksi peminjaman ini sudah selesai diserahkan.');
-        }
+        // Daftar kode_buku yang sudah pernah dikembalikan pada transaksi ini
+        $kodeBukuSudahKembali = $peminjaman->pengembalian->pluck('kode_buku')->toArray();
 
-        // Kalkulasi estimasi denda keterlambatan (Rp 1.000 / hari)
-        $tglKembali = Carbon::now();
-        $tglTenggat = Carbon::parse($peminjaman->tgl_tenggat);
-
-        $terlambatHari = $tglKembali->greaterThan($tglTenggat) ? $tglKembali->diffInDays($tglTenggat) : 0;
-        $estimasiDenda = $terlambatHari * 1000;
-
-        return view('pengembalian.create', compact('peminjaman', 'tglKembali', 'terlambatHari', 'estimasiDenda'));
+        return view('pengembalian.create', compact('peminjaman', 'kodeBukuSudahKembali'));
     }
 
-    /**
-     * Menyimpan transaksi pengembalian dan menghitung total denda
-     */
     public function store(Request $request)
     {
         $request->validate([
-            'id_peminjaman' => 'required|exists:peminjaman,id_peminjaman',
-            'tgl_kembali' => 'required|date',
-            'kondisi' => 'required|array',
+            'id_peminjaman'          => 'required|exists:peminjaman,id_peminjaman',
+            'tgl_kembali'            => 'required|date',
+            'items'                  => 'required|array|min:1',
+            'items.*.dipilih'        => 'nullable|boolean',
+            'items.*.kode_buku'      => 'required|exists:buku,kode_buku',
+            'items.*.kondisi'        => 'required_if:items.*.dipilih,1|in:Baik,Rusak Ringan,Rusak Berat,Hilang',
+            'items.*.denda_fisik'    => 'required_if:items.*.dipilih,1|numeric|min:0',
+            'items.*.keterangan'     => 'nullable|string|max:255',
         ]);
 
-        DB::beginTransaction();
-        try {
-            $peminjaman = Peminjaman::with('detailPeminjaman.buku')->findOrFail($request->id_peminjaman);
-            $tglKembali = Carbon::parse($request->tgl_kembali);
-            $tglTenggat = Carbon::parse($peminjaman->tgl_tenggat);
+        $selectedItems = collect($request->items)->filter(function ($item) {
+            return isset($item['dipilih']) && $item['dipilih'] == '1';
+        });
 
-            // 1. Hitung Hari Keterlambatan (Rp 1.000 / hari)
-            $terlambatHari = $tglKembali->greaterThan($tglTenggat) ? $tglKembali->diffInDays($tglTenggat) : 0;
-            $dendaTelat = $terlambatHari * 1000;
+        if ($selectedItems->isEmpty()) {
+            return back()
+                ->withInput()
+                ->withErrors(['items' => 'Pilih minimal satu buku yang akan dikembalikan.']);
+        }
 
-            // 2. Simpan Transaksi Utama Pengembalian
-            $pengembalian = Pengembalian::create([
-                'id_peminjaman' => $peminjaman->id_peminjaman,
-                'tgl_kembali' => $tglKembali->format('Y-m-d'),
-                'terlambat_hari' => $terlambatHari,
-                'nip' => Auth::user()->nip,
-            ]);
+        $hasilTransaksi = DB::transaction(function () use ($request, $selectedItems) {
+            $peminjaman = Peminjaman::with(['detailPeminjaman', 'pengembalian'])
+                ->findOrFail($request->id_peminjaman);
+
+            $kodeSudahKembali = $peminjaman->pengembalian->pluck('kode_buku')->toArray();
+
+            $tglTenggat = \Carbon\Carbon::parse($peminjaman->tgl_tenggat)->startOfDay();
+            $tglKembali = \Carbon\Carbon::parse($request->tgl_kembali)->startOfDay();
+
+            $terlambatHari = $tglKembali->gt($tglTenggat) ? $tglTenggat->diffInDays($tglKembali) : 0;
+            $tarifPerHari = 1000;
+            $dendaTerlambat = $terlambatHari * $tarifPerHari;
 
             $totalDendaFisik = 0;
+            $alasanDenda = [];
+            $pengembalianBaruIds = [];
 
-            // 3. Loop Pengecekan Kondisi Fisik Tiap Buku
-            foreach ($request->kondisi as $item) {
-                $buku = Buku::where('kode_buku', $item['kode_buku'])->first();
-                $dendaBukuIni = 0;
-                $statusKondisi = $item['status'];
-
-                // Jika HILANG -> denda seharga buku (diambil dari kolom harga tabel buku)
-                if ($statusKondisi === 'Hilang') {
-                    $dendaBukuIni = $buku ? $buku->harga : (float) ($item['denda_fisik'] ?? 0);
-                } else {
-                    $dendaBukuIni = (float) ($item['denda_fisik'] ?? 0);
-                }
-
-                $totalDendaFisik += $dendaBukuIni;
-
-                // Catat detail kondisi buku kembali
-                KondisiBukuKembali::create([
-                    'id_pengembalian' => $pengembalian->id_pengembalian,
-                    'kode_buku' => $item['kode_buku'],
-                    'kondisi' => $statusKondisi,
-                    'denda_fisik' => $dendaBukuIni,
-                    'keterangan' => $item['keterangan'] ?? null,
-                ]);
-
-                // Tambahkan kembali stok buku HANYA jika fisik buku TIDAK hilang
-                if ($statusKondisi !== 'Hilang' && $buku) {
-                    $detail = $peminjaman->detailPeminjaman->where('kode_buku', $item['kode_buku'])->first();
-                    $buku->increment('stok', $detail ? $detail->jumlah : 1);
-                }
+            if ($terlambatHari > 0) {
+                $alasanDenda[] = 'Terlambat';
             }
 
-            // 4. Update status transaksi peminjaman menjadi Selesai
-            $peminjaman->update(['status' => 'Selesai']);
-
-            // 5. Buat tagihan denda jika ada akumulasi denda telat atau denda fisik
-            // 5. Buat tagihan denda jika ada total denda
-            $totalDenda = $dendaTelat + $totalDendaFisik;
-
-            if ($totalDenda > 0) {
-                $alasan = [];
-
-                // Cek jika ada denda keterlambatan
-                if ($dendaTelat > 0) {
-                    $alasan[] = 'Terlambat';
+            foreach ($selectedItems as $item) {
+                if (in_array($item['kode_buku'], $kodeSudahKembali)) {
+                    continue;
                 }
 
-                // Cek daftar kondisi fisik buku yang memicu denda
-                $detailDendaFisik = KondisiBukuKembali::where('id_pengembalian', $pengembalian->id_pengembalian)
-                    ->where('denda_fisik', '>', 0)
-                    ->get();
+                $pengembalian = Pengembalian::create([
+                    'id_peminjaman'      => $peminjaman->id_peminjaman,
+                    'kode_buku'          => $item['kode_buku'],
+                    'nip'                => auth()->user()->nip,
+                    'tgl_kembali'        => $request->tgl_kembali,
+                    'terlambat_hari'     => $terlambatHari,
+                    'kondisi'            => $item['kondisi'],
+                    'keterangan_kondisi' => $item['keterangan'] ?? null,
+                ]);
 
-                foreach ($detailDendaFisik as $df) {
-                    if ($df->kondisi === 'Hilang') {
-                        $alasan[] = 'Hilang';
-                    } elseif (in_array($df->kondisi, ['Rusak Ringan', 'Rusak Berat'])) {
-                        $alasan[] = 'Rusak';
+                $pengembalianBaruIds[] = $pengembalian->id_pengembalian;
+                $totalDendaFisik += (float) $item['denda_fisik'];
+
+                if ($item['kondisi'] !== 'Baik') {
+                    $labelKondisi = str_contains($item['kondisi'], 'Rusak') ? 'Rusak' : $item['kondisi'];
+                    if (!in_array($labelKondisi, $alasanDenda)) {
+                        $alasanDenda[] = $labelKondisi;
                     }
                 }
 
-                // Hapus kata duplikat dan gabungkan dengan koma
-                // Contoh hasil: "Terlambat", "Hilang", atau "Terlambat, Rusak"
-                $keteranganSingkat = implode(', ', array_unique($alasan));
+                if ($item['kondisi'] !== 'Hilang') {
+                    $detail = $peminjaman->detailPeminjaman->where('kode_buku', $item['kode_buku'])->first();
+                    $qty = $detail ? $detail->jumlah : 1;
+                    Buku::where('kode_buku', $item['kode_buku'])->increment('stok', $qty);
+                }
+            }
 
-                Denda::create([
-                    'id_pengembalian' => $pengembalian->id_pengembalian,
-                    'jumlah_denda'    => $totalDenda,
+            $totalJumlahDenda = $dendaTerlambat + $totalDendaFisik;
+            $dendaBaru = null;
+
+            if ($totalJumlahDenda > 0 && !empty($pengembalianBaruIds)) {
+                $dendaBaru = Denda::create([
+                    'id_pengembalian' => $pengembalianBaruIds[0],
+                    'nip'             => auth()->user()->nip,
+                    'denda_terlambat' => $dendaTerlambat,
+                    'denda_fisik'     => $totalDendaFisik,
+                    'jumlah_denda'    => $totalJumlahDenda,
                     'status_bayar'    => 'Belum Lunas',
-                    'keterangan'      => $keteranganSingkat,
-                    'nip'             => Auth::user()->nip,
+                    'keterangan'      => Str::limit(implode(', ', $alasanDenda), 50, ''),
                 ]);
             }
 
-            DB::commit();
-            return redirect()->route('pengembalian.index')->with('success', 'Pengembalian buku berhasil diproses.');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Gagal memproses pengembalian: ' . $e->getMessage());
+            $totalBukuDipinjam = $peminjaman->detailPeminjaman->pluck('kode_buku')->unique()->count();
+            $totalBukuDikembalikan = Pengembalian::where('id_peminjaman', $peminjaman->id_peminjaman)
+                ->pluck('kode_buku')
+                ->unique()
+                ->count();
+
+            if ($totalBukuDikembalikan >= $totalBukuDipinjam) {
+                $peminjaman->update(['status' => 'Selesai']);
+            }
+
+            return [
+                'id_peminjaman'       => $peminjaman->id_peminjaman,
+                'pengembalianBaruIds' => $pengembalianBaruIds,
+                'dendaBaru'           => $dendaBaru,
+            ];
+        });
+
+        // Kirim email bukti pengembalian setelah database sukses di-commit
+        if (!empty($hasilTransaksi['pengembalianBaruIds'])) {
+            $peminjamanLengkap = Peminjaman::with(['mahasiswa', 'detailPeminjaman.buku', 'pengembalian'])
+                ->find($hasilTransaksi['id_peminjaman']);
+
+            $daftarBukuKembali = Pengembalian::with('buku')
+                ->whereIn('id_pengembalian', $hasilTransaksi['pengembalianBaruIds'])
+                ->get();
+
+            // Hitung sisa buku yang belum dikembalikan (jika pengembalian parsial)
+            $kodeSemuaKembali = $peminjamanLengkap->pengembalian->pluck('kode_buku')->toArray();
+            $sisaBukuBelumKembali = $peminjamanLengkap->detailPeminjaman->reject(function ($detail) use ($kodeSemuaKembali) {
+                return in_array($detail->kode_buku, $kodeSemuaKembali);
+            });
+
+            if ($peminjamanLengkap && !empty($peminjamanLengkap->mahasiswa->email)) {
+                try {
+                    Mail::to($peminjamanLengkap->mahasiswa->email)
+                        ->send(new NotifikasiPengembalianMail(
+                            $peminjamanLengkap,
+                            $daftarBukuKembali,
+                            $hasilTransaksi['dendaBaru'],
+                            $sisaBukuBelumKembali
+                        ));
+                } catch (\Exception $e) {
+                    Log::error('Gagal mengirim email bukti pengembalian: ' . $e->getMessage());
+                }
+            }
         }
+
+        return redirect()->route('pengembalian.index')->with('success', 'Pengembalian buku berhasil diproses.');
+    }
+
+    public function exportPdf()
+    {
+        $pengembalian = Pengembalian::with([
+            'peminjaman.mahasiswa',
+            'buku',
+            'user',
+            'denda'
+        ])->latest()->get();
+
+        $pdf = Pdf::loadView('pengembalian.pdf', compact('pengembalian'))
+            ->setPaper('a4', 'landscape');
+
+        return $pdf->download('laporan-pengembalian-' . now()->format('Y-m-d') . '.pdf');
+    }
+
+    public function exportCsv()
+    {
+        $pengembalian = Pengembalian::with([
+            'peminjaman.mahasiswa',
+            'buku',
+            'user',
+            'denda'
+        ])->latest()->get();
+
+        $fileName = 'laporan-pengembalian-' . now()->format('Y-m-d') . '.csv';
+
+        $headers = [
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"$fileName\"",
+        ];
+
+        $callback = function () use ($pengembalian) {
+            $file = fopen('php://output', 'w');
+
+            // Header Kolom CSV
+            fputcsv($file, [
+                'ID Kembali',
+                'ID Pinjam',
+                'NIM',
+                'Nama Peminjam',
+                'Tanggal Kembali',
+                'Keterlambatan (Hari)',
+                'Kondisi Fisik Buku',
+                'Petugas Penerima',
+                'Total Denda (Rp)',
+                'Status Denda'
+            ]);
+
+            // Isi Baris Data
+            foreach ($pengembalian as $k) {
+                $kondisiText = $k->kondisi->map(function ($item) {
+                    $judul = $item->buku->judul ?? $item->kode_buku;
+                    return "[{$item->kode_buku}] {$judul}: {$item->kondisi}";
+                })->implode(' | ');
+
+                fputcsv($file, [
+                    '#' . $k->id_pengembalian,
+                    '#' . $k->id_peminjaman,
+                    $k->peminjaman->nim ?? '-',
+                    $k->peminjaman->mahasiswa->nama ?? '-',
+                    $k->tgl_kembali,
+                    $k->terlambat_hari,
+                    $kondisiText ?: '-',
+                    $k->user->nama ?? $k->nip,
+                    $k->denda ? $k->denda->jumlah_denda : 0,
+                    $k->denda ? $k->denda->status_bayar : 'Tidak Ada Denda',
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

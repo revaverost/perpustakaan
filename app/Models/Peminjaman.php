@@ -35,4 +35,10 @@ class Peminjaman extends Model
     {
         return $this->hasMany(DetailPeminjaman::class, 'id_peminjaman', 'id_peminjaman');
     }
+
+    // Tambahkan relasi ini:
+    public function pengembalian()
+    {
+        return $this->hasMany(Pengembalian::class, 'id_peminjaman', 'id_peminjaman');
+    }
 }

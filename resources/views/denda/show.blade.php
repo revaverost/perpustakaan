@@ -32,19 +32,44 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Terlambat {{ $denda->pengembalian->terlambat_hari }} Hari (Rp 1.000 / Hari)</td>
-                                <td class="text-end">Rp {{ number_format($denda->pengembalian->terlambat_hari * 1000, 0, ',', '.') }}</td>
-                            </tr>
-                            @foreach($denda->pengembalian->kondisiBukuKembali as $kondisi)
-                                @if($kondisi->denda_fisik > 0)
+                                @if($denda->denda_terlambat > 0)
                                     <tr>
-                                        <td>Kerusakan/Kehilangan Buku [{{ $kondisi->kode_buku }}] (Kondisi: {{ $kondisi->kondisi }})</td>
-                                        <td class="text-end">Rp {{ number_format($kondisi->denda_fisik, 0, ',', '.') }}</td>
+                                        <td>Terlambat {{ $denda->pengembalian->terlambat_hari ?? 0 }} Hari (Rp 1.000 / Hari)</td>
+                                        <td class="text-end">Rp {{ number_format($denda->denda_terlambat, 0, ',', '.') }}</td>
                                     </tr>
                                 @endif
-                            @endforeach
-                        </tbody>
+
+                                @if($denda->denda_fisik > 0)
+                                    @php
+                                        // Ambil daftar buku dalam transaksi pengembalian yang sama yang memiliki kondisi rusak/hilang
+                                        $bukuBermasalah = \App\Models\Pengembalian::with('buku')
+                                            ->where('id_peminjaman', $denda->pengembalian->id_peminjaman)
+                                            ->where('tgl_kembali', $denda->pengembalian->tgl_kembali)
+                                            ->where('kondisi', '!=', 'Baik')
+                                            ->get();
+                                    @endphp
+
+                                    <tr>
+                                        <td>
+                                            Kerusakan / Kehilangan Buku:
+                                            <ul class="mb-0 ps-3 small text-muted">
+                                                @forelse($bukuBermasalah as $item)
+                                                    <li>
+                                                        <strong>[{{ $item->kode_buku }}]</strong> {{ $item->buku->judul ?? '' }} — 
+                                                        Kondisi: <span class="text-danger fw-semibold">{{ $item->kondisi }}</span>
+                                                        @if($item->keterangan_kondisi)
+                                                            ({{ $item->keterangan_kondisi }})
+                                                        @endif
+                                                    </li>
+                                                @empty
+                                                    <li>[{{ $denda->pengembalian->kode_buku }}] — Kondisi: {{ $denda->pengembalian->kondisi }}</li>
+                                                @endforelse
+                                            </ul>
+                                        </td>
+                                        <td class="text-end align-middle">Rp {{ number_format($denda->denda_fisik, 0, ',', '.') }}</td>
+                                    </tr>
+                                @endif
+                            </tbody>
                         <tfoot class="fw-bold">
                             <tr>
                                 <td>TOTAL DENDA</td>

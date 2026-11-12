@@ -30,36 +30,72 @@ Route::middleware(['guest'])->group(function () {
 });
 
 // =========================================================================
-// ROUTE AUTHENTICATED (Wajib Login Petugas/Admin)
+// ROUTE AUTHENTICATED (Wajib Login Pustakawan / Admin)
 // =========================================================================
 Route::middleware(['auth'])->group(function () {
     // Logout
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-    // Dashboard Utamss
+    // Dashboard Utama
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // MASTER DATA: Buku & Mahasiswa
-    Route::resource('buku', BukuController::class)->except(['show']);
-    Route::resource('mahasiswa', MahasiswaController::class)->except(['show'])->middleware('role:Admin');
+    // =====================================================================
+    // MASTER DATA
+    // =====================================================================
+    // Katalog Buku: Admin (Monitoring/Index), Pustakawan (CRUD)
+    Route::get('buku', [BukuController::class, 'index'])->name('buku.index');
+    Route::resource('buku', BukuController::class)
+        ->only(['create', 'store', 'edit', 'update', 'destroy'])
+        ->middleware('role:Pustakawan');
 
-    // MASTER DATA: User/Petugas (Pengaturan Akses Admin)
-    Route::resource('user', UserController::class)->except(['show']);
+    // Data Mahasiswa & Petugas/User: Khusus Admin (CRUD)
+    Route::resource('mahasiswa', MahasiswaController::class)
+        ->except(['show'])
+        ->middleware('role:Admin');
 
-    // TRANSAKSI: Peminjaman Buku
-    // Admin hanya dapat melihat/export data peminjaman. Mutasi hanya untuk Pustakawan.
+    Route::resource('user', UserController::class)
+        ->except(['show'])
+        ->middleware('role:Admin');
+
+    // =====================================================================
+    // TRANSAKSI: PEMINJAMAN BUKU
+    // =====================================================================
+    // 1. Route spesifik (create, store, edit, update, destroy) harus di ATAS wildcard {peminjaman}
+    Route::resource('peminjaman', PeminjamanController::class)
+        ->only(['create', 'store', 'edit', 'update', 'destroy'])
+        ->middleware('role:Pustakawan');
+
+    Route::post('peminjaman/{id}/perpanjang', [PeminjamanController::class, 'perpanjang'])
+        ->middleware('role:Pustakawan')
+        ->name('peminjaman.perpanjang');
+
+    // 2. Route monitoring & cetak laporan (Admin & Pustakawan)
     Route::resource('peminjaman', PeminjamanController::class)->only(['index', 'show']);
-    Route::resource('peminjaman', PeminjamanController::class)->only(['create', 'store', 'edit', 'update', 'destroy'])->middleware('role:Pustakawan');
     Route::get('peminjaman-export/pdf', [PeminjamanController::class, 'exportPdf'])->name('peminjaman.export.pdf');
     Route::get('peminjaman-export/csv', [PeminjamanController::class, 'exportCsv'])->name('peminjaman.export.csv');
-    Route::post('peminjaman/{id}/perpanjang', [PeminjamanController::class, 'perpanjang'])->middleware('role:Pustakawan')->name('peminjaman.perpanjang');
 
-    // TRANSAKSI: Pengembalian Buku
-    Route::get('pengembalian/create/{id_peminjaman}', [PengembalianController::class, 'create'])->name('pengembalian.create');
-    Route::resource('pengembalian', PengembalianController::class)->except(['create']);
+    // =====================================================================
+    // TRANSAKSI: PENGEMBALIAN BUKU
+    // =====================================================================
+    Route::middleware(['role:Pustakawan'])->group(function () {
+        Route::get('pengembalian/create/{id_peminjaman}', [PengembalianController::class, 'create'])->name('pengembalian.create');
+        Route::post('pengembalian', [PengembalianController::class, 'store'])->name('pengembalian.store');
+        // TRANSAKSI: PENGEMBALIAN BUKU
+        Route::get('pengembalian-export/pdf', [PengembalianController::class, 'exportPdf'])->name('pengembalian.export.pdf');
+        Route::get('pengembalian-export/csv', [PengembalianController::class, 'exportCsv'])->name('pengembalian.export.csv');
+    });
 
-    // TRANSAKSI: Denda & Pelunasan
+    Route::resource('pengembalian', PengembalianController::class)->only(['index', 'show']);
+
+    // =====================================================================
+    // TRANSAKSI: DENDA & PELUNASAN
+    // =====================================================================
     Route::get('denda', [DendaController::class, 'index'])->name('denda.index');
     Route::get('denda/{id}', [DendaController::class, 'show'])->name('denda.show');
-    Route::post('denda/{id}/bayar', [DendaController::class, 'prosesPembayaran'])->name('denda.bayar');
+    // TRANSAKSI: DENDA & PELUNASAN
+    Route::get('denda-export/pdf', [DendaController::class, 'exportPdf'])->name('denda.export.pdf');
+    Route::get('denda-export/csv', [DendaController::class, 'exportCsv'])->name('denda.export.csv');
+    Route::post('denda/{id}/bayar', [DendaController::class, 'prosesPembayaran'])
+        ->middleware('role:Pustakawan')
+        ->name('denda.bayar');
 });
