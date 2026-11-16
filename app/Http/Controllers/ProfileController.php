@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -16,11 +17,16 @@ class ProfileController extends Controller
 
     public function update(Request $request)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
+        if (! $user instanceof User) {
+            abort(401);
+        }
+
         $data = $request->validate([
-            'nama' => 'required|string|max:100',
-            'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($user->nip, 'nip')],
+            'nama'  => 'required|string|max:100',
+            'email' => ['required', 'email', Rule::unique('petugas', 'email')->ignore($user->nip, 'nip')],
         ]);
 
         $user->update($data);
@@ -30,15 +36,22 @@ class ProfileController extends Controller
 
     public function updatePassword(Request $request)
     {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        if (! $user instanceof User) {
+            abort(401);
+        }
+
         $request->validate([
             'current_password' => 'required|current_password',
-            'password' => 'required|string|min:6|confirmed',
+            'password'         => 'required|string|min:6|confirmed',
         ], [
             'current_password.current_password' => 'Password saat ini tidak sesuai.',
-            'password.confirmed' => 'Konfirmasi password baru tidak cocok.',
+            'password.confirmed'                => 'Konfirmasi password baru tidak cocok.',
         ]);
 
-        Auth::user()->update([
+        $user->update([
             'password' => Hash::make($request->password),
         ]);
 

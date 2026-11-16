@@ -11,8 +11,6 @@ use Illuminate\Support\Facades\Mail;
 
 class OtpService
 {
-    public const TYPE_STAFF = 'staff';
-
     public const STATUS_OK = 'ok';
     public const STATUS_INVALID = 'invalid';
     public const STATUS_EXPIRED = 'expired';
@@ -33,8 +31,7 @@ class OtpService
         $code = (string) random_int($minimum, $maximum);
 
         $otp = LoginOtp::create([
-            'user_type' => self::TYPE_STAFF,
-            'user_id' => $user->nip,
+            'nip' => $user->nip,
             'email' => $user->email,
             'code_hash' => Hash::make($code),
             'expires_at' => now()->addMinutes((int) config('otp.ttl_minutes', 5)),
@@ -56,8 +53,7 @@ class OtpService
     public function verify(string $email, string $code): string
     {
         return DB::transaction(function () use ($email, $code) {
-            $otp = LoginOtp::where('user_type', self::TYPE_STAFF)
-                ->where('email', $email)
+            $otp = LoginOtp::where('email', $email)
                 ->whereNull('consumed_at')
                 ->latest('id')
                 ->lockForUpdate()
@@ -107,8 +103,7 @@ class OtpService
      */
     public function secondsUntilResend(string $email): int
     {
-        $latest = LoginOtp::where('user_type', self::TYPE_STAFF)
-            ->where('email', $email)
+        $latest = LoginOtp::where('email', $email)
             ->latest('id')
             ->first();
 
@@ -128,8 +123,7 @@ class OtpService
      */
     public function invalidatePending(string $email): void
     {
-        LoginOtp::where('user_type', self::TYPE_STAFF)
-            ->where('email', $email)
+        LoginOtp::where('email', $email)
             ->whereNull('consumed_at')
             ->update(['consumed_at' => now()]);
     }

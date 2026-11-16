@@ -15,8 +15,8 @@ class DatabaseSeeder extends Seeder
         // 1. Seed Users (Admin & Pustakawan)
         User::updateOrCreate(['nip' => '1992011001'], [
             'nip' => '1992011001',
-            'nama' => 'Budi Santoso (Admin)',
-            'email' => 'admin@kampus.ac.id',
+            'nama' => 'Reva Triana Sukma (Admin)',
+            'email' => 'revatriana9@gmail.com',
             'password' => Hash::make('password123'),
             'role' => 'Admin'
         ]);

@@ -26,4 +26,9 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    public function loginOtps()
+    {
+        return $this->hasMany(LoginOtp::class, 'nip', 'nip');
+    }
 }

@@ -27,16 +27,14 @@ class MahasiswaController extends Controller
             'jurusan' => 'required|string|max:100',
             'angkatan' => 'required|digits:4|integer',
             'no_hp' => 'nullable|string|max:15',
-            'email' => ['required', 'email', Rule::unique('mahasiswa', 'email'), Rule::unique('users', 'email')],
-            'password' => 'required|string|min:6|confirmed',
+            'email' => 'required|email|unique:mahasiswa,email',
             'status_aktif' => 'required|boolean',
         ], [
             'nim.unique' => 'NIM mahasiswa sudah terdaftar.',
-            'email.unique' => 'Email sudah digunakan oleh akun lain.',
-            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+            'email.unique' => 'Email mahasiswa sudah terdaftar.',
         ]);
 
-        Mahasiswa::create($request->except('password_confirmation'));
+        Mahasiswa::create($request->all());
 
         return redirect()->route('mahasiswa.index')->with('success', 'Anggota mahasiswa berhasil ditambahkan.');
     }
@@ -53,26 +51,11 @@ class MahasiswaController extends Controller
             'jurusan' => 'required|string|max:100',
             'angkatan' => 'required|digits:4|integer',
             'no_hp' => 'nullable|string|max:15',
-            'email' => [
-                'required',
-                'email',
-                Rule::unique('mahasiswa', 'email')->ignore($mahasiswa->nim, 'nim'),
-                Rule::unique('users', 'email'),
-            ],
-            'password' => 'nullable|string|min:6|confirmed',
+            'email' => ['required', 'email', Rule::unique('mahasiswa', 'email')->ignore($mahasiswa->nim, 'nim')],
             'status_aktif' => 'required|boolean',
-        ], [
-            'email.unique' => 'Email sudah digunakan oleh akun lain.',
-            'password.confirmed' => 'Konfirmasi password tidak cocok.',
         ]);
 
-        $data = $request->except('password_confirmation');
-
-        if (empty($data['password'])) {
-            unset($data['password']);
-        }
-
-        $mahasiswa->update($data);
+        $mahasiswa->update($request->all());
 
         return redirect()->route('mahasiswa.index')->with('success', 'Data anggota mahasiswa berhasil diperbarui.');
     }

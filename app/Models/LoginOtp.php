@@ -7,8 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class LoginOtp extends Model
 {
     protected $fillable = [
-        'user_type',
-        'user_id',
+        'nip',
         'email',
         'code_hash',
         'attempts',
@@ -25,5 +24,10 @@ class LoginOtp extends Model
     public function isExpired(): bool
     {
         return $this->expires_at->isPast();
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'nip', 'nip');
     }
 }

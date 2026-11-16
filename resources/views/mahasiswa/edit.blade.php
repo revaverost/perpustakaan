@@ -49,7 +49,7 @@
                             </div>
                         </div>
 
-                        <div class="row g-3 mb-3">
+                        {{-- <div class="row g-3 mb-3">
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">Password Baru</label>
                                 <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" placeholder="Kosongkan jika tidak diubah">
@@ -59,7 +59,7 @@
                                 <label class="form-label fw-bold">Konfirmasi Password Baru</label>
                                 <input type="password" name="password_confirmation" class="form-control" placeholder="Ulangi password baru">
                             </div>
-                        </div>
+                        </div> --}}
 
                         <div class="mb-4">
                             <label class="form-label fw-bold">Status Keanggotaan</label>
