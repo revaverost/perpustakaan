@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 12, 2026 at 05:07 PM
--- Server version: 8.0.30
--- PHP Version: 8.3.30
+-- Waktu pembuatan: 16 Nov 2026 pada 09.00
+-- Versi server: 8.0.30
+-- Versi PHP: 8.3.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -26,7 +26,7 @@ USE `perpustakaan_kampus`;
 -- --------------------------------------------------------
 
 --
--- Table structure for table `buku`
+-- Struktur dari tabel `buku`
 --
 
 CREATE TABLE `buku` (
@@ -44,7 +44,7 @@ CREATE TABLE `buku` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `buku`
+-- Dumping data untuk tabel `buku`
 --
 
 INSERT INTO `buku` (`kode_buku`, `judul`, `pengarang`, `penerbit`, `tahun_terbit`, `kategori`, `stok`, `harga`, `lokasi_rak`, `created_at`, `updated_at`) VALUES
@@ -79,7 +79,7 @@ INSERT INTO `buku` (`kode_buku`, `judul`, `pengarang`, `penerbit`, `tahun_terbit
 -- --------------------------------------------------------
 
 --
--- Table structure for table `denda`
+-- Struktur dari tabel `denda`
 --
 
 CREATE TABLE `denda` (
@@ -98,7 +98,7 @@ CREATE TABLE `denda` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `denda`
+-- Dumping data untuk tabel `denda`
 --
 
 INSERT INTO `denda` (`id_denda`, `id_pengembalian`, `nip`, `denda_terlambat`, `denda_fisik`, `jumlah_denda`, `status_bayar`, `keterangan`, `tgl_bayar`, `metode_bayar`, `created_at`, `updated_at`) VALUES
@@ -112,7 +112,7 @@ INSERT INTO `denda` (`id_denda`, `id_pengembalian`, `nip`, `denda_terlambat`, `d
 -- --------------------------------------------------------
 
 --
--- Table structure for table `detail_peminjaman`
+-- Struktur dari tabel `detail_peminjaman`
 --
 
 CREATE TABLE `detail_peminjaman` (
@@ -125,7 +125,7 @@ CREATE TABLE `detail_peminjaman` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `detail_peminjaman`
+-- Dumping data untuk tabel `detail_peminjaman`
 --
 
 INSERT INTO `detail_peminjaman` (`id_detail`, `id_peminjaman`, `kode_buku`, `jumlah`, `created_at`, `updated_at`) VALUES
@@ -198,7 +198,7 @@ INSERT INTO `detail_peminjaman` (`id_detail`, `id_peminjaman`, `kode_buku`, `jum
 -- --------------------------------------------------------
 
 --
--- Table structure for table `failed_jobs`
+-- Struktur dari tabel `failed_jobs`
 --
 
 CREATE TABLE `failed_jobs` (
@@ -214,7 +214,7 @@ CREATE TABLE `failed_jobs` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mahasiswa`
+-- Struktur dari tabel `mahasiswa`
 --
 
 CREATE TABLE `mahasiswa` (
@@ -230,7 +230,7 @@ CREATE TABLE `mahasiswa` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `mahasiswa`
+-- Dumping data untuk tabel `mahasiswa`
 --
 
 INSERT INTO `mahasiswa` (`nim`, `nama`, `jurusan`, `angkatan`, `no_hp`, `email`, `status_aktif`, `created_at`, `updated_at`) VALUES
@@ -266,7 +266,7 @@ INSERT INTO `mahasiswa` (`nim`, `nama`, `jurusan`, `angkatan`, `no_hp`, `email`,
 -- --------------------------------------------------------
 
 --
--- Table structure for table `migrations`
+-- Struktur dari tabel `migrations`
 --
 
 CREATE TABLE `migrations` (
@@ -276,7 +276,7 @@ CREATE TABLE `migrations` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `migrations`
+-- Dumping data untuk tabel `migrations`
 --
 
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
@@ -293,12 +293,13 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (11, '2026_11_06_080523_create_kondisi_buku_kembali_table', 1),
 (12, '2026_11_11_070000_create_jadwal_pustakawan_table', 2),
 (13, '2026_11_12_091447_merge_kondisi_into_pengembalian_table', 3),
-(14, '2026_11_12_094453_move_denda_columns_to_denda_table', 4);
+(14, '2026_11_12_094453_move_denda_columns_to_denda_table', 4),
+(15, '2026_11_14_104405_rename_users_table_to_petugas', 5);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `password_reset_tokens`
+-- Struktur dari tabel `password_reset_tokens`
 --
 
 CREATE TABLE `password_reset_tokens` (
@@ -310,7 +311,7 @@ CREATE TABLE `password_reset_tokens` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `peminjaman`
+-- Struktur dari tabel `peminjaman`
 --
 
 CREATE TABLE `peminjaman` (
@@ -326,7 +327,7 @@ CREATE TABLE `peminjaman` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `peminjaman`
+-- Dumping data untuk tabel `peminjaman`
 --
 
 INSERT INTO `peminjaman` (`id_peminjaman`, `nim`, `nip`, `tgl_pinjam`, `tgl_tenggat`, `jumlah_perpanjang`, `status`, `created_at`, `updated_at`) VALUES
@@ -394,7 +395,7 @@ INSERT INTO `peminjaman` (`id_peminjaman`, `nim`, `nip`, `tgl_pinjam`, `tgl_teng
 -- --------------------------------------------------------
 
 --
--- Table structure for table `pengembalian`
+-- Struktur dari tabel `pengembalian`
 --
 
 CREATE TABLE `pengembalian` (
@@ -411,7 +412,7 @@ CREATE TABLE `pengembalian` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `pengembalian`
+-- Dumping data untuk tabel `pengembalian`
 --
 
 INSERT INTO `pengembalian` (`id_pengembalian`, `id_peminjaman`, `kode_buku`, `nip`, `tgl_kembali`, `terlambat_hari`, `kondisi`, `keterangan_kondisi`, `created_at`, `updated_at`) VALUES
@@ -453,7 +454,7 @@ INSERT INTO `pengembalian` (`id_pengembalian`, `id_peminjaman`, `kode_buku`, `ni
 -- --------------------------------------------------------
 
 --
--- Table structure for table `personal_access_tokens`
+-- Struktur dari tabel `personal_access_tokens`
 --
 
 CREATE TABLE `personal_access_tokens` (
@@ -472,10 +473,10 @@ CREATE TABLE `personal_access_tokens` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users`
+-- Struktur dari tabel `petugas`
 --
 
-CREATE TABLE `users` (
+CREATE TABLE `petugas` (
   `nip` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `nama` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -487,25 +488,25 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `users`
+-- Dumping data untuk tabel `petugas`
 --
 
-INSERT INTO `users` (`nip`, `nama`, `email`, `password`, `role`, `remember_token`, `created_at`, `updated_at`) VALUES
+INSERT INTO `petugas` (`nip`, `nama`, `email`, `password`, `role`, `remember_token`, `created_at`, `updated_at`) VALUES
 ('1992011001', 'Budi Santoso (Admin)', 'admin@kampus.ac.id', '$2y$10$aP1uInNo91uqjSReDtRnR.O0N2.UNNnwtsfZOztIqhPt6ooBJlA9q', 'Admin', 'qjvcgU1Awp2gIDYLQxX8jKAwPfFypLDLb2UajOXGLSmWQElEp8rvUwYZsCvB', '2026-11-06 04:26:36', '2026-11-10 23:30:53'),
-('1995031202', 'Siti Rahma (Pustakawan)', 'pustakawan@kampus.ac.id', '$2y$10$7avjpE4gxb1c2r1hPIGdiuJd1UNwhobz9LaJA0FmZE8PT51te.4Re', 'Pustakawan', 'iI8LP7b3wr6IK7orIZ1dzXPNzxS4dVhnf8mbGKahZ8OSPTGwohnS7oYn0jx6', '2026-11-06 04:26:36', '2026-11-10 23:30:53');
+('1995031202', 'Siti Rahma (Pustakawan)', 'pustakawan@kampus.ac.id', '$2y$10$7avjpE4gxb1c2r1hPIGdiuJd1UNwhobz9LaJA0FmZE8PT51te.4Re', 'Pustakawan', 'hrIlwE67cWZInagUyOUKIWKgVw2LAqMhAxelZ6tNumHYxKYN7NA6DgmuW8Ho', '2026-11-06 04:26:36', '2026-11-10 23:30:53');
 
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indexes for table `buku`
+-- Indeks untuk tabel `buku`
 --
 ALTER TABLE `buku`
   ADD PRIMARY KEY (`kode_buku`);
 
 --
--- Indexes for table `denda`
+-- Indeks untuk tabel `denda`
 --
 ALTER TABLE `denda`
   ADD PRIMARY KEY (`id_denda`),
@@ -513,7 +514,7 @@ ALTER TABLE `denda`
   ADD KEY `denda_nip_foreign` (`nip`);
 
 --
--- Indexes for table `detail_peminjaman`
+-- Indeks untuk tabel `detail_peminjaman`
 --
 ALTER TABLE `detail_peminjaman`
   ADD PRIMARY KEY (`id_detail`),
@@ -521,33 +522,33 @@ ALTER TABLE `detail_peminjaman`
   ADD KEY `detail_peminjaman_kode_buku_foreign` (`kode_buku`);
 
 --
--- Indexes for table `failed_jobs`
+-- Indeks untuk tabel `failed_jobs`
 --
 ALTER TABLE `failed_jobs`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`);
 
 --
--- Indexes for table `mahasiswa`
+-- Indeks untuk tabel `mahasiswa`
 --
 ALTER TABLE `mahasiswa`
   ADD PRIMARY KEY (`nim`),
   ADD UNIQUE KEY `mahasiswa_email_unique` (`email`);
 
 --
--- Indexes for table `migrations`
+-- Indeks untuk tabel `migrations`
 --
 ALTER TABLE `migrations`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `password_reset_tokens`
+-- Indeks untuk tabel `password_reset_tokens`
 --
 ALTER TABLE `password_reset_tokens`
   ADD PRIMARY KEY (`email`);
 
 --
--- Indexes for table `peminjaman`
+-- Indeks untuk tabel `peminjaman`
 --
 ALTER TABLE `peminjaman`
   ADD PRIMARY KEY (`id_peminjaman`),
@@ -555,7 +556,7 @@ ALTER TABLE `peminjaman`
   ADD KEY `peminjaman_nip_foreign` (`nip`);
 
 --
--- Indexes for table `pengembalian`
+-- Indeks untuk tabel `pengembalian`
 --
 ALTER TABLE `pengembalian`
   ADD PRIMARY KEY (`id_pengembalian`),
@@ -564,7 +565,7 @@ ALTER TABLE `pengembalian`
   ADD KEY `pengembalian_kode_buku_foreign` (`kode_buku`);
 
 --
--- Indexes for table `personal_access_tokens`
+-- Indeks untuk tabel `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
   ADD PRIMARY KEY (`id`),
@@ -572,90 +573,90 @@ ALTER TABLE `personal_access_tokens`
   ADD KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`);
 
 --
--- Indexes for table `users`
+-- Indeks untuk tabel `petugas`
 --
-ALTER TABLE `users`
+ALTER TABLE `petugas`
   ADD PRIMARY KEY (`nip`),
   ADD UNIQUE KEY `users_email_unique` (`email`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT untuk tabel yang dibuang
 --
 
 --
--- AUTO_INCREMENT for table `denda`
+-- AUTO_INCREMENT untuk tabel `denda`
 --
 ALTER TABLE `denda`
   MODIFY `id_denda` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT for table `detail_peminjaman`
+-- AUTO_INCREMENT untuk tabel `detail_peminjaman`
 --
 ALTER TABLE `detail_peminjaman`
   MODIFY `id_detail` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=116;
 
 --
--- AUTO_INCREMENT for table `failed_jobs`
+-- AUTO_INCREMENT untuk tabel `failed_jobs`
 --
 ALTER TABLE `failed_jobs`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `migrations`
+-- AUTO_INCREMENT untuk tabel `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
--- AUTO_INCREMENT for table `peminjaman`
+-- AUTO_INCREMENT untuk tabel `peminjaman`
 --
 ALTER TABLE `peminjaman`
   MODIFY `id_peminjaman` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=111;
 
 --
--- AUTO_INCREMENT for table `pengembalian`
+-- AUTO_INCREMENT untuk tabel `pengembalian`
 --
 ALTER TABLE `pengembalian`
   MODIFY `id_pengembalian` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
--- AUTO_INCREMENT for table `personal_access_tokens`
+-- AUTO_INCREMENT untuk tabel `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- Constraints for dumped tables
+-- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
 --
 
 --
--- Constraints for table `denda`
+-- Ketidakleluasaan untuk tabel `denda`
 --
 ALTER TABLE `denda`
   ADD CONSTRAINT `denda_id_pengembalian_foreign` FOREIGN KEY (`id_pengembalian`) REFERENCES `pengembalian` (`id_pengembalian`) ON DELETE CASCADE,
-  ADD CONSTRAINT `denda_nip_foreign` FOREIGN KEY (`nip`) REFERENCES `users` (`nip`) ON DELETE RESTRICT ON UPDATE CASCADE;
+  ADD CONSTRAINT `denda_nip_foreign` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 --
--- Constraints for table `detail_peminjaman`
+-- Ketidakleluasaan untuk tabel `detail_peminjaman`
 --
 ALTER TABLE `detail_peminjaman`
   ADD CONSTRAINT `detail_peminjaman_id_peminjaman_foreign` FOREIGN KEY (`id_peminjaman`) REFERENCES `peminjaman` (`id_peminjaman`) ON DELETE CASCADE,
   ADD CONSTRAINT `detail_peminjaman_kode_buku_foreign` FOREIGN KEY (`kode_buku`) REFERENCES `buku` (`kode_buku`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 --
--- Constraints for table `peminjaman`
+-- Ketidakleluasaan untuk tabel `peminjaman`
 --
 ALTER TABLE `peminjaman`
   ADD CONSTRAINT `peminjaman_nim_foreign` FOREIGN KEY (`nim`) REFERENCES `mahasiswa` (`nim`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `peminjaman_nip_foreign` FOREIGN KEY (`nip`) REFERENCES `users` (`nip`) ON DELETE RESTRICT ON UPDATE CASCADE;
+  ADD CONSTRAINT `peminjaman_nip_foreign` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 --
--- Constraints for table `pengembalian`
+-- Ketidakleluasaan untuk tabel `pengembalian`
 --
 ALTER TABLE `pengembalian`
   ADD CONSTRAINT `pengembalian_id_peminjaman_foreign` FOREIGN KEY (`id_peminjaman`) REFERENCES `peminjaman` (`id_peminjaman`) ON DELETE CASCADE,
   ADD CONSTRAINT `pengembalian_kode_buku_foreign` FOREIGN KEY (`kode_buku`) REFERENCES `buku` (`kode_buku`) ON DELETE RESTRICT ON UPDATE CASCADE,
-  ADD CONSTRAINT `pengembalian_nip_foreign` FOREIGN KEY (`nip`) REFERENCES `users` (`nip`) ON DELETE RESTRICT ON UPDATE CASCADE;
+  ADD CONSTRAINT `pengembalian_nip_foreign` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE RESTRICT ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
