@@ -19,6 +19,7 @@ class Peminjaman extends Model
         'tgl_tenggat',
         'jumlah_perpanjang',
         'status',
+        'terakhir_pengingat',
     ];
 
     public function mahasiswa()

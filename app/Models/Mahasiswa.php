@@ -14,6 +14,10 @@ class Mahasiswa extends Model
 
     protected $fillable = ['nim', 'nama', 'jurusan', 'angkatan', 'no_hp', 'email', 'status_aktif'];
 
+    protected $casts = [
+        'status_aktif' => 'boolean',
+    ];
+
     public function peminjaman(): HasMany
     {
         return $this->hasMany(Peminjaman::class, 'nim', 'nim');

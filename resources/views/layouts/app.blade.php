@@ -112,6 +112,11 @@
                             </div>
                         </div>
 
+                        <!-- TOMBOL PROFIL -->
+                        <a href="{{ route('profile.edit') }}" class="btn btn-outline-light btn-sm d-flex align-items-center gap-1" title="Profil & Password">
+                            <i class="bi bi-person-circle"></i> Profil
+                        </a>
+
                         <!-- TOMBOL LOGOUT -->
                         <button type="button" class="btn btn-outline-light btn-sm d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#logoutModal">
                             <i class="bi bi-box-arrow-right"></i> Logout

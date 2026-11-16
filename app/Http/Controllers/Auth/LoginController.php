@@ -3,11 +3,20 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Services\OtpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
+    public const SESSION_EMAIL = 'staff_otp_email';
+    public const SESSION_REMEMBER = 'staff_otp_remember';
+    public const SESSION_EXPIRES = 'staff_otp_expires_at';
+
+    public function __construct(private OtpService $otpService) {}
+
     /**
      * Menampilkan form login.
      */
@@ -17,26 +26,34 @@ class LoginController extends Controller
     }
 
     /**
-     * Memproses autentikasi NIP dan Password.
+     * Memvalidasi email + password, lalu mengirim OTP tanpa login.
      */
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'nip' => 'required|string|size:10',
+            'email' => 'required|email',
             'password' => 'required|string',
         ]);
 
-        if (Auth::attempt(['nip' => $credentials['nip'], 'password' => $credentials['password']], $request->remember)) {
-            $request->session()->regenerate();
+        $user = User::where('email', $credentials['email'])->first();
 
-            // Redirect eksplisit ke peminjaman.index
-            return redirect()->route('peminjaman.index')
-                ->with('success', 'Selamat datang kembali, ' . Auth::user()->nama . '!');
+        if (! $user || ! Hash::check($credentials['password'], $user->password)) {
+            return back()->withErrors([
+                'email' => 'Email atau password yang Anda masukkan salah.',
+            ])->onlyInput('email');
         }
 
-        return back()->withErrors([
-            'nip' => 'NIP atau password yang Anda masukkan salah.',
-        ])->onlyInput('nip');
+        $otp = $this->otpService->issue($user);
+
+        $request->session()->regenerate();
+        $request->session()->put([
+            self::SESSION_EMAIL => $user->email,
+            self::SESSION_REMEMBER => $request->boolean('remember'),
+            self::SESSION_EXPIRES => $otp->expires_at->toIso8601String(),
+        ]);
+
+        return redirect()->route('login.otp')
+            ->with('info', 'Kode OTP telah dikirim ke ' . $this->maskEmail($user->email) . '.');
     }
 
     /**
@@ -50,5 +67,14 @@ class LoginController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('login')->with('success', 'Anda telah berhasil keluar.');
+    }
+
+    private function maskEmail(string $email): string
+    {
+        [$name, $domain] = explode('@', $email, 2) + ['', ''];
+
+        $visible = substr($name, 0, 2);
+
+        return $visible . str_repeat('*', max(1, strlen($name) - 2)) . '@' . $domain;
     }
 }

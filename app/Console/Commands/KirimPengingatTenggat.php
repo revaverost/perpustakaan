@@ -26,9 +26,14 @@ class KirimPengingatTenggat extends Command
         $besok = Carbon::tomorrow()->toDateString();
 
         // Cari semua peminjaman berstatus Dipinjam yang tenggatnya tepat besok
+        // dan belum dikirimi pengingat pada hari ini.
         $daftarPeminjaman = Peminjaman::with(['mahasiswa', 'detailPeminjaman.buku', 'pengembalian'])
             ->where('status', 'Dipinjam')
             ->whereDate('tgl_tenggat', $besok)
+            ->where(function ($query) {
+                $query->whereNull('terakhir_pengingat')
+                    ->orWhereDate('terakhir_pengingat', '<', today());
+            })
             ->get();
 
         if ($daftarPeminjaman->isEmpty()) {
@@ -56,6 +61,8 @@ class KirimPengingatTenggat extends Command
             try {
                 Mail::to($peminjaman->mahasiswa->email)
                     ->send(new PengingatTenggatMail($peminjaman, $sisaBuku));
+
+                $peminjaman->update(['terakhir_pengingat' => now()]);
 
                 $terkirim++;
                 $this->info("Pengingat terkirim ke {$peminjaman->mahasiswa->email} (ID Pinjam #{$peminjaman->id_peminjaman})");

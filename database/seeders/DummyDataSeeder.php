@@ -92,9 +92,11 @@ class DummyDataSeeder extends Seeder
                 if ($selesai) {
                     Pengembalian::create([
                         'id_peminjaman' => $loan->id_peminjaman,
+                        'kode_buku' => $kodeBuku,
                         'nip' => $petugas,
                         'tgl_kembali' => $tglTenggat->copy()->subDays($i % 4)->toDateString(),
                         'terlambat_hari' => 0,
+                        'kondisi' => 'Baik',
                     ]);
                 }
             }

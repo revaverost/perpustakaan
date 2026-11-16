@@ -23,8 +23,8 @@ class DatabaseSeeder extends Seeder
 
         User::updateOrCreate(['nip' => '1995031202'], [
             'nip' => '1995031202',
-            'nama' => 'Siti Rahma (Pustakawan)',
-            'email' => 'pustakawan@kampus.ac.id',
+            'nama' => 'Rifky Al Adli (Pustakawan)',
+            'email' => 'rifkyaladli61@gmail.com',
             'password' => Hash::make('password123'),
             'role' => 'Pustakawan'
         ]);
@@ -37,6 +37,16 @@ class DatabaseSeeder extends Seeder
             'angkatan' => '2023',
             'no_hp' => '081234567890',
             'email' => 'rizki@student.ac.id',
+            'status_aktif' => true
+        ]);
+
+        Mahasiswa::updateOrCreate(['nim' => '10250032'], [
+            'nim' => '10250032',
+            'nama' => 'Rifky Al Adli',
+            'jurusan' => 'Rekayasa Perangkat Lunak',
+            'angkatan' => '2023',
+            'no_hp' => '089528429181',
+            'email' => 'rifkyaladli61@gmail.com',
             'status_aktif' => true
         ]);
 

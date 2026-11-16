@@ -49,6 +49,18 @@
                             </div>
                         </div>
 
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Password Baru</label>
+                                <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" placeholder="Kosongkan jika tidak diubah">
+                                @error('password')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Konfirmasi Password Baru</label>
+                                <input type="password" name="password_confirmation" class="form-control" placeholder="Ulangi password baru">
+                            </div>
+                        </div>
+
                         <div class="mb-4">
                             <label class="form-label fw-bold">Status Keanggotaan</label>
                             <select name="status_aktif" class="form-select @error('status_aktif') is-invalid @enderror" required>

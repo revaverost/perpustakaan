@@ -36,16 +36,15 @@
                         <form action="{{ route('login') }}" method="POST">
                             @csrf
 
-                            {{-- Input NIP --}}
+                            {{-- Input Email --}}
                             <div class="mb-3">
-                                <label for="nip" class="form-label fw-bold">NIP (10 Karakter)</label>
-                                <input type="text" name="nip" id="nip" 
-                                       class="form-control @error('nip') is-invalid @enderror" 
-                                       placeholder="Contoh: 1995031202" 
-                                       value="{{ old('nip') }}" 
-                                       maxlength="10" 
+                                <label for="email" class="form-label fw-bold">Email</label>
+                                <input type="email" name="email" id="email" 
+                                       class="form-control @error('email') is-invalid @enderror" 
+                                       placeholder="nama@gmail.com" 
+                                       value="{{ old('email') }}" 
                                        required autofocus>
-                                @error('nip')
+                                @error('email')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -73,7 +72,7 @@
                         </form>
                     </div>
                     <div class="card-footer bg-white text-center py-3 border-0">
-                        <small class="text-muted">Akses Khusus Admin & Pustakawan</small>
+                        <small class="text-muted d-block">Akses Khusus Admin & Pustakawan</small>
                     </div>
                 </div>
             </div>

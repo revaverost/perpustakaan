@@ -32,8 +32,8 @@ class Buku extends Model
         return $this->hasMany(DetailPeminjaman::class, 'kode_buku', 'kode_buku');
     }
 
-    public function kondisiBukuKembali(): HasMany
+    public function pengembalian(): HasMany
     {
-        return $this->hasMany(KondisiBukuKembali::class, 'kode_buku', 'kode_buku');
+        return $this->hasMany(Pengembalian::class, 'kode_buku', 'kode_buku');
     }
 }

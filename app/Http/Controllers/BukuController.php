@@ -67,7 +67,7 @@ class BukuController extends Controller
     {
         // Buku yang sudah pernah masuk transaksi tidak boleh dihapus agar
         // riwayat peminjaman/pengembalian tetap utuh (FK memakai ON DELETE RESTRICT).
-        if ($buku->detailPeminjaman()->exists() || $buku->kondisiBukuKembali()->exists()) {
+        if ($buku->detailPeminjaman()->exists() || $buku->pengembalian()->exists()) {
             return back()->with('error', 'Buku "' . $buku->judul . '" tidak dapat dihapus karena masih memiliki riwayat peminjaman atau pengembalian.');
         }
 

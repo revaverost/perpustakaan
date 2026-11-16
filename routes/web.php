@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\LoginOtpController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BukuController;
 use App\Http\Controllers\MahasiswaController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PeminjamanController;
 use App\Http\Controllers\PengembalianController;
 use App\Http\Controllers\DendaController;
+use App\Http\Controllers\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,6 +29,11 @@ Route::get('/', function () {
 Route::middleware(['guest'])->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login']);
+
+    // Verifikasi OTP (dikirim ke email Admin/Pustakawan)
+    Route::get('/login/otp', [LoginOtpController::class, 'show'])->name('login.otp');
+    Route::post('/login/otp/verify', [LoginOtpController::class, 'verify'])->name('login.otp.verify');
+    Route::post('/login/otp/resend', [LoginOtpController::class, 'resend'])->name('login.otp.resend');
 });
 
 // =========================================================================
@@ -35,6 +42,11 @@ Route::middleware(['guest'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     // Logout
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+    // Profil & Password Staff
+    Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 
     // Dashboard Utama
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -62,7 +74,7 @@ Route::middleware(['auth'])->group(function () {
     // =====================================================================
     // 1. Route spesifik (create, store, edit, update, destroy) harus di ATAS wildcard {peminjaman}
     Route::resource('peminjaman', PeminjamanController::class)
-        ->only(['create', 'store', 'edit', 'update', 'destroy'])
+        ->only(['create', 'store'])
         ->middleware('role:Pustakawan');
 
     Route::post('peminjaman/{id}/perpanjang', [PeminjamanController::class, 'perpanjang'])

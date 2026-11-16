@@ -73,6 +73,32 @@ class PengembalianController extends Controller
                 ->withErrors(['items' => 'Pilih minimal satu buku yang akan dikembalikan.']);
         }
 
+        $peminjamanValidasi = Peminjaman::with(['detailPeminjaman', 'pengembalian'])
+            ->findOrFail($request->id_peminjaman);
+
+        if ($peminjamanValidasi->status !== 'Dipinjam') {
+            return back()
+                ->withInput()
+                ->with('error', 'Transaksi peminjaman ini sudah selesai dan tidak dapat diproses kembali.');
+        }
+
+        $kodeDipinjam = $peminjamanValidasi->detailPeminjaman->pluck('kode_buku')->all();
+        $kodeSudahKembali = $peminjamanValidasi->pengembalian->pluck('kode_buku')->all();
+
+        foreach ($selectedItems as $item) {
+            if (! in_array($item['kode_buku'], $kodeDipinjam, true)) {
+                return back()
+                    ->withInput()
+                    ->with('error', 'Buku dengan kode ' . $item['kode_buku'] . ' bukan bagian dari peminjaman ini.');
+            }
+
+            if (in_array($item['kode_buku'], $kodeSudahKembali, true)) {
+                return back()
+                    ->withInput()
+                    ->with('error', 'Buku dengan kode ' . $item['kode_buku'] . ' sudah pernah dikembalikan.');
+            }
+        }
+
         $hasilTransaksi = DB::transaction(function () use ($request, $selectedItems) {
             $peminjaman = Peminjaman::with(['detailPeminjaman', 'pengembalian'])
                 ->findOrFail($request->id_peminjaman);
@@ -241,10 +267,8 @@ class PengembalianController extends Controller
 
             // Isi Baris Data
             foreach ($pengembalian as $k) {
-                $kondisiText = $k->kondisi->map(function ($item) {
-                    $judul = $item->buku->judul ?? $item->kode_buku;
-                    return "[{$item->kode_buku}] {$judul}: {$item->kondisi}";
-                })->implode(' | ');
+                $judul = $k->buku->judul ?? $k->kode_buku;
+                $kondisiText = "[{$k->kode_buku}] {$judul}: {$k->kondisi}";
 
                 fputcsv($file, [
                     '#' . $k->id_pengembalian,
