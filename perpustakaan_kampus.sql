@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 16, 2026 at 02:32 PM
--- Server version: 8.0.30
--- PHP Version: 8.3.30
+-- Waktu pembuatan: 27 Nov 2026 pada 08.48
+-- Versi server: 8.0.30
+-- Versi PHP: 8.3.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -26,7 +26,7 @@ USE `perpustakaan_kampus`;
 -- --------------------------------------------------------
 
 --
--- Table structure for table `buku`
+-- Struktur dari tabel `buku`
 --
 
 CREATE TABLE `buku` (
@@ -44,12 +44,12 @@ CREATE TABLE `buku` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `buku`
+-- Dumping data untuk tabel `buku`
 --
 
 INSERT INTO `buku` (`kode_buku`, `judul`, `pengarang`, `penerbit`, `tahun_terbit`, `kategori`, `stok`, `harga`, `lokasi_rak`, `created_at`, `updated_at`) VALUES
 ('250001', 'Pemrograman Web dengan Laravel 10', 'Rian H.', 'Informatika', '2023', 'Komputer', 5, '150000.00', 'R-01', '2026-11-16 05:55:53', '2026-11-16 05:55:53'),
-('250002', 'Struktur Data dan Algoritma Dasar', 'Suryadi', 'Andi Offset', '2022', 'Komputer', 3, '120000.00', 'R-01', '2026-11-16 05:55:53', '2026-11-16 05:55:53'),
+('250002', 'Struktur Data dan Algoritma Dasar', 'Suryadi', 'Andi Offset', '2022', 'Komputer', 3, '120000.00', 'R-01', '2026-11-16 05:55:53', '2026-11-16 07:56:54'),
 ('250003', 'Basis Data untuk Pemula', 'Fathansyah', 'Informatika', '2021', 'Komputer', 4, '135000.00', 'R-02', '2026-11-16 05:55:53', '2026-11-16 05:55:53'),
 ('250004', 'Pengantar Jaringan Komputer', 'Budi Sutedjo', 'Andi Offset', '2020', 'Komputer', 6, '145000.00', 'R-02', '2026-11-16 05:55:53', '2026-11-16 05:55:53'),
 ('250005', 'Manajemen Organisasi Modern', 'T. Hani Handoko', 'BPFE', '2019', 'Manajemen', 3, '110000.00', 'R-03', '2026-11-16 05:55:53', '2026-11-16 05:55:53'),
@@ -57,14 +57,14 @@ INSERT INTO `buku` (`kode_buku`, `judul`, `pengarang`, `penerbit`, `tahun_terbit
 ('250007', 'Metode Penelitian Ilmiah', 'Sugiyono', 'Alfabeta', '2023', 'Referensi', 4, '95000.00', 'R-04', '2026-11-16 05:55:53', '2026-11-16 05:55:53'),
 ('260001', 'Panduan Dasar Pemrograman', 'Andi Wijaya', 'Penerbit Dummy', '2024', 'Referensi', 10, '76000.00', 'D-01', '2026-11-16 05:55:53', '2026-11-16 05:55:53'),
 ('260002', 'Mengenal Teknologi Informasi', 'Mira Anggraini', 'Penerbit Dummy', '2024', 'Manajemen', 10, '77000.00', 'D-01', '2026-11-16 05:55:53', '2026-11-16 05:55:53'),
-('260003', 'Belajar Basis Data', 'Taufik Hidayat', 'Penerbit Dummy', '2024', 'Fiksi', 10, '78000.00', 'D-01', '2026-11-16 05:55:53', '2026-11-16 05:55:53'),
+('260003', 'Belajar Basis Data', 'Taufik Hidayat', 'Penerbit Dummy', '2024', 'Fiksi', 10, '78000.00', 'D-01', '2026-11-16 05:55:53', '2026-11-16 07:58:36'),
 ('260004', 'Jaringan Komputer Modern', 'Lukman Hakim', 'Penerbit Dummy', '2024', 'Komputer', 10, '79000.00', 'D-01', '2026-11-16 05:55:53', '2026-11-16 05:55:53'),
 ('260005', 'Manajemen Waktu Efektif', 'Dewi Kartika', 'Penerbit Dummy', '2024', 'Referensi', 10, '80000.00', 'D-01', '2026-11-16 05:55:53', '2026-11-16 05:55:53'),
 ('260006', 'Pengantar Ekonomi Kreatif', 'Hendra Saputra', 'Penerbit Dummy', '2024', 'Manajemen', 10, '81000.00', 'D-02', '2026-11-16 05:55:53', '2026-11-16 05:55:53'),
 ('260007', 'Strategi Komunikasi Digital', 'Nina Marlina', 'Penerbit Dummy', '2024', 'Fiksi', 10, '82000.00', 'D-02', '2026-11-16 05:55:53', '2026-11-16 05:55:53'),
 ('260008', 'Dasar-Dasar Akuntansi', 'Rudi Hartono', 'Penerbit Dummy', '2024', 'Komputer', 10, '83000.00', 'D-02', '2026-11-16 05:55:53', '2026-11-16 05:55:53'),
 ('260009', 'Metode Penelitian Terapan', 'Yuni Astuti', 'Penerbit Dummy', '2024', 'Referensi', 10, '84000.00', 'D-02', '2026-11-16 05:55:53', '2026-11-16 05:55:53'),
-('260010', 'Psikologi Pendidikan', 'Fajar Nugroho', 'Penerbit Dummy', '2024', 'Manajemen', 10, '85000.00', 'D-02', '2026-11-16 05:55:53', '2026-11-16 05:55:53'),
+('260010', 'Psikologi Pendidikan', 'Fajar Nugroho', 'Penerbit Dummy', '2024', 'Manajemen', 11, '85000.00', 'D-02', '2026-11-16 05:55:53', '2026-11-23 23:08:26'),
 ('260011', 'Kewirausahaan untuk Pemula', 'Sari Puspita', 'Penerbit Dummy', '2024', 'Fiksi', 10, '86000.00', 'D-03', '2026-11-16 05:55:53', '2026-11-16 05:55:53'),
 ('260012', 'Sastra dan Kebudayaan', 'Bambang Setiawan', 'Penerbit Dummy', '2024', 'Komputer', 10, '87000.00', 'D-03', '2026-11-16 05:55:53', '2026-11-16 05:55:53'),
 ('260013', 'Matematika Terapan', 'Dian Pratiwi', 'Penerbit Dummy', '2024', 'Referensi', 10, '88000.00', 'D-03', '2026-11-16 05:55:53', '2026-11-16 05:55:53'),
@@ -79,13 +79,12 @@ INSERT INTO `buku` (`kode_buku`, `judul`, `pengarang`, `penerbit`, `tahun_terbit
 -- --------------------------------------------------------
 
 --
--- Table structure for table `denda`
+-- Struktur dari tabel `denda`
 --
 
 CREATE TABLE `denda` (
   `id_denda` bigint UNSIGNED NOT NULL,
   `id_pengembalian` bigint UNSIGNED NOT NULL,
-  `nip` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `denda_terlambat` decimal(10,2) NOT NULL DEFAULT '0.00',
   `denda_fisik` decimal(10,2) NOT NULL DEFAULT '0.00',
   `jumlah_denda` decimal(10,2) NOT NULL DEFAULT '0.00',
@@ -97,10 +96,18 @@ CREATE TABLE `denda` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data untuk tabel `denda`
+--
+
+INSERT INTO `denda` (`id_denda`, `id_pengembalian`, `denda_terlambat`, `denda_fisik`, `jumlah_denda`, `status_bayar`, `keterangan`, `tgl_bayar`, `metode_bayar`, `created_at`, `updated_at`) VALUES
+(1, 21, '9000.00', '15000.00', '24000.00', 'Lunas', 'Terlambat, Rusak', '2026-11-16 07:57:37', 'Tunai', '2026-11-16 07:56:54', '2026-11-16 07:57:37'),
+(2, 23, '73000.00', '0.00', '73000.00', 'Lunas', 'Terlambat', '2026-11-23 23:08:47', 'Tunai', '2026-11-23 23:08:26', '2026-11-23 23:08:47');
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `detail_peminjaman`
+-- Struktur dari tabel `detail_peminjaman`
 --
 
 CREATE TABLE `detail_peminjaman` (
@@ -113,7 +120,7 @@ CREATE TABLE `detail_peminjaman` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `detail_peminjaman`
+-- Dumping data untuk tabel `detail_peminjaman`
 --
 
 INSERT INTO `detail_peminjaman` (`id_detail`, `id_peminjaman`, `kode_buku`, `jumlah`, `created_at`, `updated_at`) VALUES
@@ -166,12 +173,14 @@ INSERT INTO `detail_peminjaman` (`id_detail`, `id_peminjaman`, `kode_buku`, `jum
 (47, 47, '260007', 1, '2026-11-16 05:55:54', '2026-11-16 05:55:54'),
 (48, 48, '260008', 1, '2026-11-16 05:55:54', '2026-11-16 05:55:54'),
 (49, 49, '260009', 1, '2026-11-16 05:55:54', '2026-11-16 05:55:54'),
-(50, 50, '260010', 1, '2026-11-16 05:55:54', '2026-11-16 05:55:54');
+(50, 50, '260010', 1, '2026-11-16 05:55:54', '2026-11-16 05:55:54'),
+(51, 51, '250002', 1, '2026-11-16 07:56:00', '2026-11-16 07:56:00'),
+(52, 51, '260003', 1, '2026-11-16 07:56:00', '2026-11-16 07:56:00');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `failed_jobs`
+-- Struktur dari tabel `failed_jobs`
 --
 
 CREATE TABLE `failed_jobs` (
@@ -187,7 +196,7 @@ CREATE TABLE `failed_jobs` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `jobs`
+-- Struktur dari tabel `jobs`
 --
 
 CREATE TABLE `jobs` (
@@ -203,7 +212,7 @@ CREATE TABLE `jobs` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `login_otps`
+-- Struktur dari tabel `login_otps`
 --
 
 CREATE TABLE `login_otps` (
@@ -220,16 +229,22 @@ CREATE TABLE `login_otps` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `login_otps`
+-- Dumping data untuk tabel `login_otps`
 --
 
 INSERT INTO `login_otps` (`id`, `nip`, `email`, `code_hash`, `attempts`, `expires_at`, `consumed_at`, `ip_address`, `created_at`, `updated_at`) VALUES
-(1, '1992011001', 'revatriana9@gmail.com', '$2y$10$l.TOOxZvarWhjbuhI5jsne8LTj/1mG12TvwxSkmwAWmautr8YIA1i', 0, '2026-11-16 07:34:38', '2026-11-16 07:30:15', '127.0.0.1', '2026-11-16 07:29:38', '2026-11-16 07:30:15');
+(6, '1992011001', 'revatriana9@gmail.com', '$2y$10$dxNmYiWzOeDUS42m4fnI5e82BKOOcgJDfd0Yh9Os7tzm0BqyL9N5C', 0, '2026-11-23 19:53:23', '2026-11-23 19:48:52', '127.0.0.1', '2026-11-23 19:48:23', '2026-11-23 19:48:52'),
+(7, '1995031203', 'revatrianasukma@gmail.com', '$2y$10$asGFVgvPEgUWtqc2WCHNU.w1.pctMePpoHy4MKyOnR2HMYazCp.PS', 0, '2026-11-23 19:55:37', '2026-11-23 19:51:03', '127.0.0.1', '2026-11-23 19:50:37', '2026-11-23 19:51:03'),
+(8, '1992011001', 'revatriana9@gmail.com', '$2y$10$lJm6OyHI0LyzFFwFiav9bOW3jcugfk1O8CK6g7.zNAxlDm12.y7Si', 0, '2026-11-23 23:10:51', '2026-11-23 23:06:57', '127.0.0.1', '2026-11-23 23:05:51', '2026-11-23 23:06:57'),
+(9, '1995031203', 'revatrianasukma@gmail.com', '$2y$10$kRgWnE5dQw4PhpGmIh78Z.DqkoAMve1ZdbLGZJtMOLaCK4l3DIhR2', 0, '2026-11-23 23:12:34', '2026-11-23 23:07:56', '127.0.0.1', '2026-11-23 23:07:34', '2026-11-23 23:07:56'),
+(10, '1992011001', 'revatriana9@gmail.com', '$2y$10$gTDvV565nd/bOzHox1GXTe3EYjqZilI7dFdA26a97.lt.T5l.zDom', 0, '2026-11-23 23:54:20', '2026-11-23 23:50:27', '127.0.0.1', '2026-11-23 23:49:20', '2026-11-23 23:50:27'),
+(11, '1992011001', 'revatriana9@gmail.com', '$2y$10$g1qWHyGmmNRQp/XOzM2s2.Ay.UobtAsY7fEplTf1RlfZoaObwXqgO', 0, '2026-11-23 23:55:27', '2026-11-23 23:52:21', '127.0.0.1', '2026-11-23 23:50:27', '2026-11-23 23:52:21'),
+(12, '1992011001', 'revatriana9@gmail.com', '$2y$10$qXU8RorH5Y2kkdIMN8h6vuFmQuSBEt6kCiZOMu7ooJhXCQgg/c/HC', 0, '2026-11-23 23:57:21', '2026-11-23 23:52:56', '127.0.0.1', '2026-11-23 23:52:21', '2026-11-23 23:52:56');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mahasiswa`
+-- Struktur dari tabel `mahasiswa`
 --
 
 CREATE TABLE `mahasiswa` (
@@ -245,12 +260,12 @@ CREATE TABLE `mahasiswa` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `mahasiswa`
+-- Dumping data untuk tabel `mahasiswa`
 --
 
 INSERT INTO `mahasiswa` (`nim`, `nama`, `jurusan`, `angkatan`, `no_hp`, `email`, `status_aktif`, `created_at`, `updated_at`) VALUES
 ('10250032', 'Rifky Al Adli', 'Rekayasa Perangkat Lunak', '2023', '089528429181', 'rifkyaladli61@gmail.com', 1, '2026-11-16 05:55:53', '2026-11-16 05:55:53'),
-('230101001', 'Ahmad Rizki', 'Teknik Informatika', '2023', '081234567890', 'rizki@student.ac.id', 1, '2026-11-16 05:55:53', '2026-11-16 05:55:53'),
+('10250096', 'REVA TRIANA SUKMA', 'Rekayasa Perangkat Lunak', '2025', '088802362631', 'revatrianalee@gmail.com', 1, '2026-11-16 07:53:40', '2026-11-16 07:54:06'),
 ('230101002', 'Siti Aisyah', 'Sistem Informasi', '2023', '081234567891', 'aisyah@student.ac.id', 1, '2026-11-16 05:55:53', '2026-11-16 05:55:53'),
 ('230101003', 'Dimas Pratama', 'Teknik Informatika', '2023', '081234567892', 'dimas@student.ac.id', 1, '2026-11-16 05:55:53', '2026-11-16 05:55:53'),
 ('230101004', 'Nabila Putri', 'Manajemen', '2023', '081234567893', 'nabila@student.ac.id', 1, '2026-11-16 05:55:53', '2026-11-16 05:55:53'),
@@ -280,7 +295,7 @@ INSERT INTO `mahasiswa` (`nim`, `nama`, `jurusan`, `angkatan`, `no_hp`, `email`,
 -- --------------------------------------------------------
 
 --
--- Table structure for table `migrations`
+-- Struktur dari tabel `migrations`
 --
 
 CREATE TABLE `migrations` (
@@ -290,7 +305,7 @@ CREATE TABLE `migrations` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `migrations`
+-- Dumping data untuk tabel `migrations`
 --
 
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
@@ -311,12 +326,13 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (15, '2026_11_12_091447_merge_kondisi_into_pengembalian_table', 1),
 (16, '2026_11_12_094453_move_denda_columns_to_denda_table', 1),
 (17, '2026_11_14_104405_rename_users_table_to_petugas', 1),
-(18, '2026_11_16_141530_change_login_otps_to_use_nip', 2);
+(18, '2026_11_16_141530_change_login_otps_to_use_nip', 2),
+(19, '2026_11_24_055217_drop_nip_from_denda_table', 3);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `password_reset_tokens`
+-- Struktur dari tabel `password_reset_tokens`
 --
 
 CREATE TABLE `password_reset_tokens` (
@@ -328,7 +344,7 @@ CREATE TABLE `password_reset_tokens` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `peminjaman`
+-- Struktur dari tabel `peminjaman`
 --
 
 CREATE TABLE `peminjaman` (
@@ -345,7 +361,7 @@ CREATE TABLE `peminjaman` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `peminjaman`
+-- Dumping data untuk tabel `peminjaman`
 --
 
 INSERT INTO `peminjaman` (`id_peminjaman`, `nim`, `nip`, `tgl_pinjam`, `tgl_tenggat`, `jumlah_perpanjang`, `status`, `terakhir_pengingat`, `created_at`, `updated_at`) VALUES
@@ -398,12 +414,13 @@ INSERT INTO `peminjaman` (`id_peminjaman`, `nim`, `nip`, `tgl_pinjam`, `tgl_teng
 (47, '240201007', '1995031202', '2026-08-31', '2026-09-15', 2, 'Dipinjam', NULL, '2026-11-16 05:55:54', '2026-11-16 05:55:54'),
 (48, '240201008', '1995031202', '2026-08-30', '2026-09-14', 0, 'Dipinjam', NULL, '2026-11-16 05:55:54', '2026-11-16 05:55:54'),
 (49, '240201009', '1995031202', '2026-08-29', '2026-09-13', 1, 'Dipinjam', NULL, '2026-11-16 05:55:54', '2026-11-16 05:55:54'),
-(50, '240201010', '1995031202', '2026-08-28', '2026-09-12', 2, 'Dipinjam', NULL, '2026-11-16 05:55:54', '2026-11-16 05:55:54');
+(50, '240201010', '1995031202', '2026-08-28', '2026-09-12', 2, 'Selesai', NULL, '2026-11-16 05:55:54', '2026-11-23 23:08:26'),
+(51, '10250096', '1995031203', '2026-11-16', '2026-11-30', 0, 'Selesai', NULL, '2026-11-16 07:56:00', '2026-11-16 07:58:36');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `pengembalian`
+-- Struktur dari tabel `pengembalian`
 --
 
 CREATE TABLE `pengembalian` (
@@ -420,7 +437,7 @@ CREATE TABLE `pengembalian` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `pengembalian`
+-- Dumping data untuk tabel `pengembalian`
 --
 
 INSERT INTO `pengembalian` (`id_pengembalian`, `id_peminjaman`, `kode_buku`, `nip`, `tgl_kembali`, `terlambat_hari`, `kondisi`, `keterangan_kondisi`, `created_at`, `updated_at`) VALUES
@@ -443,12 +460,15 @@ INSERT INTO `pengembalian` (`id_pengembalian`, `id_peminjaman`, `kode_buku`, `ni
 (17, 17, '260017', '1995031202', '2026-11-12', 0, 'Baik', NULL, '2026-11-16 05:55:54', '2026-11-16 05:55:54'),
 (18, 18, '260018', '1995031202', '2026-11-10', 0, 'Baik', NULL, '2026-11-16 05:55:54', '2026-11-16 05:55:54'),
 (19, 19, '260019', '1995031202', '2026-11-08', 0, 'Baik', NULL, '2026-11-16 05:55:54', '2026-11-16 05:55:54'),
-(20, 20, '260020', '1995031202', '2026-11-10', 0, 'Baik', NULL, '2026-11-16 05:55:54', '2026-11-16 05:55:54');
+(20, 20, '260020', '1995031202', '2026-11-10', 0, 'Baik', NULL, '2026-11-16 05:55:54', '2026-11-16 05:55:54'),
+(21, 51, '250002', '1995031203', '2026-12-09', 9, 'Rusak Ringan', NULL, '2026-11-16 07:56:54', '2026-11-16 07:56:54'),
+(22, 51, '260003', '1995031203', '2026-11-16', 0, 'Baik', NULL, '2026-11-16 07:58:36', '2026-11-16 07:58:36'),
+(23, 50, '260010', '1995031203', '2026-11-24', 73, 'Baik', NULL, '2026-11-23 23:08:26', '2026-11-23 23:08:26');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `personal_access_tokens`
+-- Struktur dari tabel `personal_access_tokens`
 --
 
 CREATE TABLE `personal_access_tokens` (
@@ -467,7 +487,7 @@ CREATE TABLE `personal_access_tokens` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `petugas`
+-- Struktur dari tabel `petugas`
 --
 
 CREATE TABLE `petugas` (
@@ -482,33 +502,33 @@ CREATE TABLE `petugas` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `petugas`
+-- Dumping data untuk tabel `petugas`
 --
 
 INSERT INTO `petugas` (`nip`, `nama`, `email`, `password`, `role`, `remember_token`, `created_at`, `updated_at`) VALUES
 ('1992011001', 'Reva Triana Sukma (Admin)', 'revatriana9@gmail.com', '$2y$10$rMRiPKyJJX675wLzZtdD0.QvSCrB0531CggZtWSk/U4nAezsR3tEm', 'Admin', NULL, '2026-11-16 05:55:53', '2026-11-16 05:55:53'),
-('1995031202', 'Rifky Al Adli (Pustakawan)', 'rifkyaladli61@gmail.com', '$2y$10$M4MqbCSNQ2zrhEle/xBeXOkTzimfydeawCkw6t7Z/cEimn7iD5MPy', 'Pustakawan', NULL, '2026-11-16 05:55:53', '2026-11-16 05:55:53');
+('1995031202', 'Rifky Al Adli (Pustakawan)', 'rifkyaladli61@gmail.com', '$2y$10$M4MqbCSNQ2zrhEle/xBeXOkTzimfydeawCkw6t7Z/cEimn7iD5MPy', 'Pustakawan', NULL, '2026-11-16 05:55:53', '2026-11-16 05:55:53'),
+('1995031203', 'reva ts', 'revatrianasukma@gmail.com', '$2y$10$Vgq5ur4p/A5eS5wJSMVspOMNhmrMFcgeyaOr9ffwseu3dGcOTBGLi', 'Pustakawan', NULL, '2026-11-16 07:45:15', '2026-11-16 07:45:37');
 
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indexes for table `buku`
+-- Indeks untuk tabel `buku`
 --
 ALTER TABLE `buku`
   ADD PRIMARY KEY (`kode_buku`);
 
 --
--- Indexes for table `denda`
+-- Indeks untuk tabel `denda`
 --
 ALTER TABLE `denda`
   ADD PRIMARY KEY (`id_denda`),
-  ADD UNIQUE KEY `denda_id_pengembalian_unique` (`id_pengembalian`),
-  ADD KEY `denda_nip_foreign` (`nip`);
+  ADD UNIQUE KEY `denda_id_pengembalian_unique` (`id_pengembalian`);
 
 --
--- Indexes for table `detail_peminjaman`
+-- Indeks untuk tabel `detail_peminjaman`
 --
 ALTER TABLE `detail_peminjaman`
   ADD PRIMARY KEY (`id_detail`),
@@ -516,47 +536,47 @@ ALTER TABLE `detail_peminjaman`
   ADD KEY `detail_peminjaman_kode_buku_foreign` (`kode_buku`);
 
 --
--- Indexes for table `failed_jobs`
+-- Indeks untuk tabel `failed_jobs`
 --
 ALTER TABLE `failed_jobs`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`);
 
 --
--- Indexes for table `jobs`
+-- Indeks untuk tabel `jobs`
 --
 ALTER TABLE `jobs`
   ADD PRIMARY KEY (`id`),
   ADD KEY `jobs_queue_index` (`queue`);
 
 --
--- Indexes for table `login_otps`
+-- Indeks untuk tabel `login_otps`
 --
 ALTER TABLE `login_otps`
   ADD PRIMARY KEY (`id`),
   ADD KEY `login_otps_nip_email_index` (`nip`,`email`);
 
 --
--- Indexes for table `mahasiswa`
+-- Indeks untuk tabel `mahasiswa`
 --
 ALTER TABLE `mahasiswa`
   ADD PRIMARY KEY (`nim`),
   ADD UNIQUE KEY `mahasiswa_email_unique` (`email`);
 
 --
--- Indexes for table `migrations`
+-- Indeks untuk tabel `migrations`
 --
 ALTER TABLE `migrations`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `password_reset_tokens`
+-- Indeks untuk tabel `password_reset_tokens`
 --
 ALTER TABLE `password_reset_tokens`
   ADD PRIMARY KEY (`email`);
 
 --
--- Indexes for table `peminjaman`
+-- Indeks untuk tabel `peminjaman`
 --
 ALTER TABLE `peminjaman`
   ADD PRIMARY KEY (`id_peminjaman`),
@@ -564,7 +584,7 @@ ALTER TABLE `peminjaman`
   ADD KEY `peminjaman_nip_foreign` (`nip`);
 
 --
--- Indexes for table `pengembalian`
+-- Indeks untuk tabel `pengembalian`
 --
 ALTER TABLE `pengembalian`
   ADD PRIMARY KEY (`id_pengembalian`),
@@ -573,7 +593,7 @@ ALTER TABLE `pengembalian`
   ADD KEY `pengembalian_kode_buku_foreign` (`kode_buku`);
 
 --
--- Indexes for table `personal_access_tokens`
+-- Indeks untuk tabel `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
   ADD PRIMARY KEY (`id`),
@@ -581,103 +601,102 @@ ALTER TABLE `personal_access_tokens`
   ADD KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`);
 
 --
--- Indexes for table `petugas`
+-- Indeks untuk tabel `petugas`
 --
 ALTER TABLE `petugas`
   ADD PRIMARY KEY (`nip`),
   ADD UNIQUE KEY `users_email_unique` (`email`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT untuk tabel yang dibuang
 --
 
 --
--- AUTO_INCREMENT for table `denda`
+-- AUTO_INCREMENT untuk tabel `denda`
 --
 ALTER TABLE `denda`
-  MODIFY `id_denda` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id_denda` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `detail_peminjaman`
+-- AUTO_INCREMENT untuk tabel `detail_peminjaman`
 --
 ALTER TABLE `detail_peminjaman`
-  MODIFY `id_detail` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `id_detail` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
--- AUTO_INCREMENT for table `failed_jobs`
+-- AUTO_INCREMENT untuk tabel `failed_jobs`
 --
 ALTER TABLE `failed_jobs`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `jobs`
+-- AUTO_INCREMENT untuk tabel `jobs`
 --
 ALTER TABLE `jobs`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `login_otps`
+-- AUTO_INCREMENT untuk tabel `login_otps`
 --
 ALTER TABLE `login_otps`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
--- AUTO_INCREMENT for table `migrations`
+-- AUTO_INCREMENT untuk tabel `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
--- AUTO_INCREMENT for table `peminjaman`
+-- AUTO_INCREMENT untuk tabel `peminjaman`
 --
 ALTER TABLE `peminjaman`
-  MODIFY `id_peminjaman` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `id_peminjaman` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
--- AUTO_INCREMENT for table `pengembalian`
+-- AUTO_INCREMENT untuk tabel `pengembalian`
 --
 ALTER TABLE `pengembalian`
-  MODIFY `id_pengembalian` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id_pengembalian` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
--- AUTO_INCREMENT for table `personal_access_tokens`
+-- AUTO_INCREMENT untuk tabel `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- Constraints for dumped tables
+-- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
 --
 
 --
--- Constraints for table `denda`
+-- Ketidakleluasaan untuk tabel `denda`
 --
 ALTER TABLE `denda`
-  ADD CONSTRAINT `denda_id_pengembalian_foreign` FOREIGN KEY (`id_pengembalian`) REFERENCES `pengembalian` (`id_pengembalian`) ON DELETE CASCADE,
-  ADD CONSTRAINT `denda_nip_foreign` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE RESTRICT ON UPDATE CASCADE;
+  ADD CONSTRAINT `denda_id_pengembalian_foreign` FOREIGN KEY (`id_pengembalian`) REFERENCES `pengembalian` (`id_pengembalian`) ON DELETE CASCADE;
 
 --
--- Constraints for table `detail_peminjaman`
+-- Ketidakleluasaan untuk tabel `detail_peminjaman`
 --
 ALTER TABLE `detail_peminjaman`
   ADD CONSTRAINT `detail_peminjaman_id_peminjaman_foreign` FOREIGN KEY (`id_peminjaman`) REFERENCES `peminjaman` (`id_peminjaman`) ON DELETE CASCADE,
   ADD CONSTRAINT `detail_peminjaman_kode_buku_foreign` FOREIGN KEY (`kode_buku`) REFERENCES `buku` (`kode_buku`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 --
--- Constraints for table `login_otps`
+-- Ketidakleluasaan untuk tabel `login_otps`
 --
 ALTER TABLE `login_otps`
   ADD CONSTRAINT `login_otps_nip_foreign` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `peminjaman`
+-- Ketidakleluasaan untuk tabel `peminjaman`
 --
 ALTER TABLE `peminjaman`
   ADD CONSTRAINT `peminjaman_nim_foreign` FOREIGN KEY (`nim`) REFERENCES `mahasiswa` (`nim`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `peminjaman_nip_foreign` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 --
--- Constraints for table `pengembalian`
+-- Ketidakleluasaan untuk tabel `pengembalian`
 --
 ALTER TABLE `pengembalian`
   ADD CONSTRAINT `pengembalian_id_peminjaman_foreign` FOREIGN KEY (`id_peminjaman`) REFERENCES `peminjaman` (`id_peminjaman`) ON DELETE CASCADE,

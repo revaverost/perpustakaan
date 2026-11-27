@@ -11,7 +11,6 @@ class Denda extends Model
 
     protected $fillable = [
         'id_pengembalian',
-        'nip',
         'denda_terlambat',
         'denda_fisik',
         'jumlah_denda',
@@ -26,8 +25,4 @@ class Denda extends Model
         return $this->belongsTo(Pengembalian::class, 'id_pengembalian', 'id_pengembalian');
     }
 
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'nip', 'nip');
-    }
 }

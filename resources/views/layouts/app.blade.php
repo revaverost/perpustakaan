@@ -63,11 +63,14 @@
                             </a>
                         </li>
                         {{-- MASTER DATA --}}
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('buku.*') ? 'active' : '' }}" href="{{ route('buku.index') }}">
-                                <i class="bi bi-journal-bookmark me-1"></i> Katalog Buku
-                            </a>
-                        </li>
+                        {{-- Menu Buku khusus untuk Pustakawan --}}
+                        @if(auth()->check() && auth()->user()->role === 'Pustakawan')
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('buku.*') ? 'active' : '' }}" href="{{ route('buku.index') }}">
+                                    <i class="bi bi-book me-1"></i> Buku
+                                </a>
+                            </li>
+                        @endif
                         @if(Auth::user()->role === 'Admin')
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('mahasiswa.*') ? 'active' : '' }}" href="{{ route('mahasiswa.index') }}">

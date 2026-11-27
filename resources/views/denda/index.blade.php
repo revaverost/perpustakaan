@@ -44,7 +44,6 @@
                         <th>Total Denda</th>
                         <th>Status</th>
                         <th>Tanggal Bayar / Metode</th>
-                        <th>Petugas (NIP)</th>
                         <th class="text-center pe-3">Aksi</th>
                     </tr>
                 </thead>
@@ -77,9 +76,7 @@
                                 <span class="fw-bold fs-6 text-danger">
                                     Rp {{ number_format($d->jumlah_denda, 0, ',', '.') }}
                                 </span>
-                                <span class="fw-bold fs-6 text-danger">
-                                    Rp {{ number_format($d->jumlah_denda, 0, ',', '.') }}
-                                </span>
+                                
                                 <div class="text-muted small">
                                     Telat: Rp {{ number_format($d->denda_terlambat, 0, ',', '.') }} |
                                     Fisik: Rp {{ number_format($d->denda_fisik, 0, ',', '.') }}
@@ -108,9 +105,8 @@
                                     <span class="text-muted small">-</span>
                                 @endif
                             </td>
-                            <td>
-                                <small class="text-muted">{{ $d->user->nama ?? ($d->nip ?? '-') }}</small>
-                            </td>
+                           
+                        
                             <td class="text-center pe-3">
                                 @if($d->status_bayar === 'Belum Lunas')
                                     <a href="{{ route('denda.show', $d->id_denda) }}" class="btn btn-sm btn-success">

@@ -59,7 +59,6 @@
                 <th class="text-end">Total Denda</th>
                 <th>Status</th>
                 <th>Tgl Bayar & Metode</th>
-                <th>Petugas</th>
             </tr>
         </thead>
         <tbody>
@@ -84,7 +83,6 @@
                             -
                         @endif
                     </td>
-                    <td>{{ $d->user->nama ?? ($d->nip ?? '-') }}</td>
                 </tr>
             @endforeach
         </tbody>

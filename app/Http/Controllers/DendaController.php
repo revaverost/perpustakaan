@@ -21,7 +21,6 @@ class DendaController extends Controller
 
         $query = Denda::with([
             'pengembalian.peminjaman.mahasiswa',
-            'user'
         ])->latest('id_denda');
 
         if (in_array($status, ['Belum Lunas', 'Lunas'])) {
@@ -43,7 +42,6 @@ class DendaController extends Controller
         $denda = Denda::with([
             'pengembalian.peminjaman.mahasiswa',
             'pengembalian.buku',
-            'user'
         ])->findOrFail($id);
 
         // Ambil daftar buku pada sesi pengembalian tersebut yang kondisinya tidak Baik (rusak/hilang)
@@ -83,11 +81,7 @@ class DendaController extends Controller
             'status_bayar' => 'Lunas',
             'tgl_bayar'    => now(),
             'metode_bayar' => $request->metode_bayar,
-            'nip'          => auth()->user()->nip,
         ]);
-
-        // Refresh relasi user (petugas penerima terbaru)
-        $denda->load('user');
 
         // Ambil daftar buku bermasalah untuk rincian kuitansi jika ada denda fisik
         $bukuBermasalah = collect();
@@ -114,6 +108,7 @@ class DendaController extends Controller
             ->route('denda.index', ['status' => 'Lunas'])
             ->with('success', 'Pembayaran denda #' . $denda->id_denda . ' berhasil diproses.');
     }
+
     /**
      * Export laporan data denda ke format PDF.
      */
@@ -123,7 +118,6 @@ class DendaController extends Controller
 
         $query = Denda::with([
             'pengembalian.peminjaman.mahasiswa',
-            'user'
         ])->latest('id_denda');
 
         if (in_array($status, ['Belum Lunas', 'Lunas'])) {
@@ -149,7 +143,6 @@ class DendaController extends Controller
 
         $query = Denda::with([
             'pengembalian.peminjaman.mahasiswa',
-            'user'
         ])->latest('id_denda');
 
         if (in_array($status, ['Belum Lunas', 'Lunas'])) {
@@ -182,7 +175,6 @@ class DendaController extends Controller
                 'Keterangan',
                 'Tanggal Bayar',
                 'Metode Bayar',
-                'Petugas'
             ]);
 
             foreach ($denda as $d) {
@@ -199,7 +191,6 @@ class DendaController extends Controller
                     $d->keterangan ?? '-',
                     $d->tgl_bayar ? \Carbon\Carbon::parse($d->tgl_bayar)->format('d/m/Y H:i') : '-',
                     $d->metode_bayar ?? '-',
-                    $d->user->nama ?? ($d->nip ?? '-'),
                 ]);
             }
 

@@ -37,7 +37,6 @@
                 <strong>Status Pembayaran:</strong> <span class="badge-lunas">LUNAS</span><br>
                 <strong>Tanggal &amp; Waktu Bayar:</strong> {{ $denda->tgl_bayar ? \Carbon\Carbon::parse($denda->tgl_bayar)->format('d/m/Y H:i') : '-' }}<br>
                 <strong>Metode Pembayaran:</strong> {{ $denda->metode_bayar ?? '-' }}<br>
-                <strong>Petugas Penerima:</strong> {{ $denda->user->nama ?? ($denda->nip ?? '-') }}
             </div>
 
             <p style="margin-bottom: 6px;"><strong>Rincian Komponen Denda:</strong></p>

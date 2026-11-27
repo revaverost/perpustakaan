@@ -54,10 +54,9 @@ Route::middleware(['auth'])->group(function () {
     // =====================================================================
     // MASTER DATA
     // =====================================================================
-    // Katalog Buku: Admin (Monitoring/Index), Pustakawan (CRUD)
-    Route::get('buku', [BukuController::class, 'index'])->name('buku.index');
+    // Katalog Buku: Khusus Pustakawan (CRUD & Monitoring)
     Route::resource('buku', BukuController::class)
-        ->only(['create', 'store', 'edit', 'update', 'destroy'])
+        ->except(['show'])
         ->middleware('role:Pustakawan');
 
     // Data Mahasiswa & Petugas/User: Khusus Admin (CRUD)
@@ -92,7 +91,6 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:Pustakawan'])->group(function () {
         Route::get('pengembalian/create/{id_peminjaman}', [PengembalianController::class, 'create'])->name('pengembalian.create');
         Route::post('pengembalian', [PengembalianController::class, 'store'])->name('pengembalian.store');
-        // TRANSAKSI: PENGEMBALIAN BUKU
         Route::get('pengembalian-export/pdf', [PengembalianController::class, 'exportPdf'])->name('pengembalian.export.pdf');
         Route::get('pengembalian-export/csv', [PengembalianController::class, 'exportCsv'])->name('pengembalian.export.csv');
     });
@@ -104,7 +102,6 @@ Route::middleware(['auth'])->group(function () {
     // =====================================================================
     Route::get('denda', [DendaController::class, 'index'])->name('denda.index');
     Route::get('denda/{id}', [DendaController::class, 'show'])->name('denda.show');
-    // TRANSAKSI: DENDA & PELUNASAN
     Route::get('denda-export/pdf', [DendaController::class, 'exportPdf'])->name('denda.export.pdf');
     Route::get('denda-export/csv', [DendaController::class, 'exportCsv'])->name('denda.export.csv');
     Route::post('denda/{id}/bayar', [DendaController::class, 'prosesPembayaran'])
