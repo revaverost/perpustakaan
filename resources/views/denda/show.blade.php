@@ -83,7 +83,7 @@
                             <strong>Status: Lunas</strong><br>
                             Dibayar pada: {{ \Carbon\Carbon::parse($denda->tgl_bayar)->format('d M Y H:i') }} | 
                             Metode: {{ $denda->metode_bayar }} | 
-                            Petugas: {{ $denda->user->nama ?? '-' }}
+                            Petugas: {{ $denda->pengembalian->user->nama ?? '-' }}
                         </div>
                     @else
                         <div class="d-flex justify-content-between align-items-center mt-4">

@@ -42,6 +42,7 @@ class DendaController extends Controller
         $denda = Denda::with([
             'pengembalian.peminjaman.mahasiswa',
             'pengembalian.buku',
+            'pengembalian.user',
         ])->findOrFail($id);
 
         // Ambil daftar buku pada sesi pengembalian tersebut yang kondisinya tidak Baik (rusak/hilang)
